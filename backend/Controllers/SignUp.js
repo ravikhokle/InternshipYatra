@@ -6,7 +6,7 @@ const SignUp = async (req, res) => {
     try {
         const { name, email, password } = req.body;
 
-        const profileImgURL = `https://internship-kro.onrender.com/public/images/profileImages/${req.file.filename}`;
+        const profileImgURL = `https://internship-kro-done.onrender.com/public/images/profileImages/${req.file.filename}`;
 
         const userData = await User.findOne({ email });
         if (userData) {

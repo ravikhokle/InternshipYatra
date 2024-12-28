@@ -4,7 +4,7 @@ const User = require('../Models/userModel');
 const updateResume = async (req, res) => {
     try {
         const { _id } = req.query; 
-        const resumeURL = `https://internship-kro.onrender.com/public/resume/${req.file.filename}`;
+        const resumeURL = `https://internship-kro-done.onrender.com/public/resume/${req.file.filename}`;
 
         if (!_id) {
             return res.status(400).json({ message: 'User ID is required' });
