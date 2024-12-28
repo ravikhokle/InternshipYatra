@@ -167,7 +167,7 @@ const Home = () => {
                   </p>
                   <div className="flex justify-between items-center mt-2 gap-2">
                     <p className="text-blue-600 text-sm md:text-base">
-                      <Link to={`/internship/${post.title}`}>View Details</Link>
+                      <Link to={`/internship/${post._id}`}>View Details</Link>
                     </p>
                     <button
                       onClick={() => handleApplyClick(post._id)}

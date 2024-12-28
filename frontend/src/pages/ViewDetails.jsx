@@ -9,16 +9,16 @@ import { ToastContainer } from "react-toastify";
  
 
 const ViewDetails = () => {
-  const { title } = useParams();
+  const { _id } = useParams();
   const [Posts, setPosts] = useState([]);
 
   useEffect(() => {
     const getInternshipDetails = async () => {
       try {
         const response = await axios.get(
-          `${import.meta.env.VITE_API}/posts/searchPost`,
+          `${import.meta.env.VITE_API}/posts/viewdetails`,
           {
-            params: { title },
+            params: { _id },
           }
         );
         setPosts(response.data);
