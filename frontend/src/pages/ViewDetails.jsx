@@ -27,10 +27,10 @@ const ViewDetails = () => {
       }
     };
 
-    if (title) {
+    if (_id) {
       getInternshipDetails();
     }
-  }, [title]);
+  }, [_id]);
 
   const handleApplyClick = async (postId) => {
     const _id = localStorage.getItem("userID");
