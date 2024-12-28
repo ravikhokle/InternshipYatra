@@ -8,7 +8,7 @@ const handleApply = async (req, res) => {
         const { _id, postId } = req.query;
 
         if (!_id || !postId) {
-            return res.status(400).json({ message: 'User ID and Post ID are required.' });
+            return res.status(400).json({ message: 'Login please' });
         }
 
         if (!mongoose.Types.ObjectId.isValid(_id) || !mongoose.Types.ObjectId.isValid(postId)) {
