@@ -89,11 +89,11 @@ const Header = () => {
             About
           </Link>
         </li>
-        <li>
+        {/* <li>
           <Link to="/contact" className="text-[#303030] text-sm md:text-base">
             Contact
           </Link>
-        </li>
+        </li> */}
         <li>
           <Link to="/createpost" className="text-[#303030] text-sm md:text-base">
             Post

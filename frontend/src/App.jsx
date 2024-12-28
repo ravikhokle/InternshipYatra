@@ -27,10 +27,11 @@ function App() {
       
         <Route path='/login' element={<Login/>}/>
         <Route path='/signup' element={<SignUp/>}/>
+        <Route path='/about' element={<About/>}/>
         <Route path='/' element={<Home/>}/>
         <Route path='*' element={<NotFound/>}/>
         <Route path="/publicprofile/:id" element={<PublicProfile />} />
-        <Route path='/internship/:title' element={<ViewDetails/>}/>
+        <Route path='/internship/:_id' element={<ViewDetails/>}/>
 
         <Route element={<ProtectedRoutes/>}>
           <Route path='/profile' element={<UserProfile/>}/>
