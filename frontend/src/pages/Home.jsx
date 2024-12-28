@@ -82,23 +82,22 @@ const Home = () => {
               Thousands of internships in all the leading sectors are waiting
               for you.
             </p>
-            <div className="mt-10 mr-0 md:mr-10 py-5 px-5 flex items-center bg-white rounded-md shadow-sm">
+            <div className="py-3 mt-5  md:mr-10 sm:px-5 sm:py-5 sm:mr-0  flex items-center bg-white rounded-md shadow-sm">
               <img
                 className="h-5 px-3"
                 src={serachIcon}
                 alt="Search Icon"
               />
               <input
-                className="outline-none flex-grow text-sm md:text-base"
+                className="outline-none w-1/2 flex-grow text-sm md:text-base"
                 type="text"
-                autoFocus
                 value={search}
                 onChange={handleSearch}
-                placeholder="Internship Title, Keyword"
+                placeholder="Internship Title"
               />
               <button
                 type="button"
-                className="px-5 py-2 bg-purple-600 rounded-md text-white text-sm md:text-base"
+                className="px-5 py-2 mr-3 sm:mr-0 bg-purple-600 rounded-md text-white text-sm md:text-base"
                 onClick={ShowPosts}
               >
                 Search

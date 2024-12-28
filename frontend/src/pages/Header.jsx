@@ -38,10 +38,10 @@ const Header = () => {
       );
       setSignUpComponent(
         <div className="flex flex-row gap-6 items-center">
-        <Link to="/" className="sm:hidden"><img className="w-8 h-8" src={homeIcon} alt="Home Icon"/></Link>
+        <Link to="/" className="sm:hidden"><img className="w-8 h-8 mr-4" src={homeIcon} alt="Home Icon"/></Link>
         <Link
           to="/signup"
-          className="text-purple-600 rounded border-2 border-purple-600 px-4 py-2 md:px-8 md:py-3 mr-3 md:mr-5"
+          className="text-purple-600 rounded border-2 border-purple-600 px-4 py-2 md:px-8 md:py-3 mr-3 md:mr-5 hidden sm:flex"
         >
           SignUp
         </Link>
