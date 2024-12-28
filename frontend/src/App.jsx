@@ -3,6 +3,7 @@ import { Route, Routes} from 'react-router-dom';
 import Login from './pages/Login'
 import Home from './pages/Home'
 import SignUp from './pages/SignUp'
+import About from './pages/About'
 import NotFound from './pages/NotFound'
 import CreatePost from './pages/CreatePost';
 import ProtectedRoutes from './pages/ProtectedRoutes';
