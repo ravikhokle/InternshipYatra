@@ -32,7 +32,7 @@ function App() {
         <Route path='/' element={<Home/>}/>
         <Route path='*' element={<NotFound/>}/>
         <Route path="/publicprofile/:id" element={<PublicProfile />} />
-        <Route path='/internship/:_id' element={<ViewDetails/>}/>
+        <Route path='/internship/:id' element={<ViewDetails/>}/>
 
         <Route element={<ProtectedRoutes/>}>
           <Route path='/profile' element={<UserProfile/>}/>

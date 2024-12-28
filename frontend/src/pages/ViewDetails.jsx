@@ -9,7 +9,7 @@ import { ToastContainer } from "react-toastify";
  
 
 const ViewDetails = () => {
-  const { _id } = useParams();
+  const { id } = useParams();
   const [Posts, setPosts] = useState([]);
 
   useEffect(() => {
@@ -18,7 +18,7 @@ const ViewDetails = () => {
         const response = await axios.get(
           `${import.meta.env.VITE_API}/posts/viewdetails`,
           {
-            params: { _id },
+            params: { id },
           }
         );
         setPosts(response.data);
@@ -27,10 +27,10 @@ const ViewDetails = () => {
       }
     };
 
-    if (_id) {
+    if (id) {
       getInternshipDetails();
     }
-  }, [_id]);
+  }, [id]);
 
   const handleApplyClick = async (postId) => {
     const _id = localStorage.getItem("userID");
