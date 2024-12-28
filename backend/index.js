@@ -15,7 +15,7 @@ DBConnect();
 
 // CORS middleware
 app.use(cors({
-    origin: 'http://localhost:5173', // Frontend origin
+    origin: 'https://internship-kro-done.onrender.com', // Frontend origin
     methods: ['GET', 'POST', 'PUT', 'DELETE'], // Allowed HTTP methods
     allowedHeaders: ['Authorization', 'Content-Type'], // Allowed headers
 }));
