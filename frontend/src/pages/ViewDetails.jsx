@@ -91,7 +91,7 @@ const ViewDetails = () => {
                 <div className="text-base text-gray-700 space-y-4">
                   <p>
                     <span className="font-medium">Stipend:</span> &#8377;
-                    {post.stipend || "Not mentioned"}
+                    {post.stipend}
                   </p>
                   <p>
                     <span className="font-medium">Skills Required:</span>{" "}

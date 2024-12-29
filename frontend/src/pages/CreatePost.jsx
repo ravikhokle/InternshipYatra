@@ -141,7 +141,6 @@ const CreatePost = () => {
                 type="text"
                 id="title"
                 name="title"
-                autoFocus
                 placeholder="Add internship title"
                 value={post.title}
               />

@@ -118,7 +118,6 @@ const SignUp = () => {
             type="text"
             id="name"
             name="name"
-            autoFocus
             placeholder="Enter your full name"
             value={SignUpInfo.name}
           />

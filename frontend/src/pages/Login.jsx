@@ -79,7 +79,6 @@ const Login = () => {
           <input
             className="text-xl mb-5 w-full py-2 my-3 px-2 border-2"
             onChange={handleChange}
-            autoFocus
             type="email"
             name="email"
             id="email"
