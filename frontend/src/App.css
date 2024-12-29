@@ -2,6 +2,48 @@
     display: none;
 }
 
-#internshipDetails > h1{
-    color: red;
+#internshipDetails > p, .jodit-wysiwyg > p{
+    font-size: 1rem;
+}
+
+#internshipDetails > h1, .jodit-wysiwyg > h1{
+    color: rgba(0, 0, 0, 0.877);
+    font-size: 1.4rem;
+    font-weight: 500;
+}
+
+#internshipDetails > h2, h3, .jodit-wysiwyg > h2, h3{
+    color: rgba(0, 0, 0, 0.877);
+    font-size: 1.3rem;
+    font-weight: 500;
+}
+
+#internshipDetails > h3, .jodit-wysiwyg h3{
+    color: rgba(0, 0, 0, 0.877);
+    font-size: 1.2rem;
+    font-weight: 500;
+}
+
+#internshipDetails > h4, h5, h6, .jodit-wysiwyg  h4, h5, h6{
+    color: rgba(0, 0, 0, 0.877);
+    font-size: 1rem;
+    font-weight: 500;
+}
+
+#internshipDetails ol li, .jodit-wysiwyg ol li{
+    list-style-type:auto;
+    margin-left: 25px;
+  }
+
+#internshipDetails ul li, .jodit-wysiwyg ul li {
+    list-style-type:disc;
+    margin-left: 25px;
+}
+
+#internshipDetails a, .jodit-wysiwyg a{
+color: #2563eb;
+}
+
+#internshipDetails a:hover{
+    text-decoration: underline;
 }

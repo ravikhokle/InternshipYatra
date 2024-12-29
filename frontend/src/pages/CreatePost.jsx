@@ -15,7 +15,6 @@ const CreatePost = () => {
     "italic",
     "underline",
     "spellcheck",
-    "align",
     "|",
     "ul",
     "ol",

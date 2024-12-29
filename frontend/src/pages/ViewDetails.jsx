@@ -56,9 +56,9 @@ const ViewDetails = () => {
   return (
     <div className="min-h-screen bg-gray-50 md:px-32">
       <div className="container mx-auto py-12 px-6">
-        <h1 className="text-4xl font-bold text-center text-purple-900 mb-10">
+        <h2 className="text-3xl sm:text-4xl font-bold text-center text-purple-900 mb-6 sm:mb-10">
           Internship Details
-        </h1>
+        </h2>
         <div className="flex flex-wrap gap-6 justify-center">
           {Posts.length > 0 ? (
             Posts.map((post, index) => (
@@ -67,9 +67,9 @@ const ViewDetails = () => {
                 className="w-full bg-white p-6 border-t-4 border-purple-600"
               >
                 {/* Title */}
-                <h2 className="text-3xl font-semibold text-purple-800 mb-3">
+                <h1 className="text-2xl sm:text-3xl font-semibold text-purple-800 mb-3">
                   {post.title}
-                </h2>
+                </h1>
 
                 {/* Company and Location */}
                 <div className="flex items-center justify-between mb-6">
@@ -88,7 +88,7 @@ const ViewDetails = () => {
                 </div>
 
                 {/* Details */}
-                <div className="text-sm text-gray-700 space-y-4">
+                <div className="text-base text-gray-700 space-y-4">
                   <p>
                     <span className="font-medium">Stipend:</span> &#8377;
                     {post.stipend || "Not mentioned"}
