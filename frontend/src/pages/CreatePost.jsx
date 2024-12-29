@@ -2,20 +2,55 @@ import { useState } from "react";
 import { ToastContainer } from "react-toastify";
 import { handleError, handleSuccess } from "../Utils";
 import { useNavigate } from "react-router-dom";
- 
+import React, { useRef } from "react";
+import JoditEditor from "jodit-react";
 
 const CreatePost = () => {
+  const editor = useRef(null);
+  const [content, setContent] = React.useState("");
+
+  const myButtons = [
+    "paragraph",
+    "bold",
+    "italic",
+    "underline",
+    "spellcheck",
+    "align",
+    "|",
+    "ul",
+    "ol",
+    "|",
+    "link",
+    "image",
+    "fullsize",
+  ];
+
+  const config = {
+    buttons: myButtons,
+    buttonsMD: myButtons,
+    buttonsSM: myButtons,
+    buttonsXS: myButtons,
+    placeholder: "Start typing here...",
+    toolbarAdaptive: true,
+    toolbarSticky: false,
+  };
+
+  const handleBlur = (newContent) => {
+    setContent(newContent);
+  };
+
+  // jodit end
 
   const [post, setPost] = useState({
-    title: '',
-    companyName: '',
-    skills: '',
-    stipend: '',
-    location: '',
-    duration: '',
-    startDate: '',
-    postDetails:'',
-    userId: localStorage.getItem('userID'),
+    title: "",
+    companyName: "",
+    skills: "",
+    stipend: "",
+    location: "",
+    duration: "",
+    startDate: "",
+    postDetails: content,
+    userId: localStorage.getItem("userID"),
   });
 
   const navigate = useNavigate();
@@ -25,15 +60,35 @@ const CreatePost = () => {
     const copyPost = { ...post };
     copyPost[name] = value;
     setPost(copyPost);
-  }
+  };
 
   const handleCreatePost = async (event) => {
     event.preventDefault();
 
-    const { title, companyName, skills, stipend, location, duration, startDate, postDetails } = post;
+    const updatedPost = { ...post, postDetails: content };
 
-    if (!title || !companyName || !skills || !stipend || !location || !duration || !startDate || !postDetails) {
-      return handleError('All Fields are required');
+    const {
+      title,
+      companyName,
+      skills,
+      stipend,
+      location,
+      duration,
+      startDate,
+      postDetails,
+    } = updatedPost;
+
+    if (
+      !title ||
+      !companyName ||
+      !skills ||
+      !stipend ||
+      !location ||
+      !duration ||
+      !startDate ||
+      !postDetails
+    ) {
+      return handleError("All Fields are required");
     }
 
     try {
@@ -41,11 +96,11 @@ const CreatePost = () => {
       const response = await fetch(url, {
         method: "Post",
         headers: {
-          'Authorization': localStorage.getItem('token'),
-          'Content-Type': 'Application/json'
+          Authorization: localStorage.getItem("token"),
+          "Content-Type": "Application/json",
         },
-        body: JSON.stringify(post)
-      })
+        body: JSON.stringify(updatedPost),
+      });
       const result = await response.json();
       const { message, success, error } = result;
       if (success) {
@@ -62,15 +117,15 @@ const CreatePost = () => {
     } catch (error) {
       handleError(error);
     }
-  }
+  };
 
   return (
-
-<div className="px-5 md:px-10 lg:px-32 flex flex-col pb-10 bg-gray-100">
+    <div className="px-5 md:px-10 lg:px-32 flex flex-col pb-10 bg-gray-100">
       <div className="mt-8">
         <h1 className="text-2xl md:text-4xl font-[600]">Post an internship</h1>
         <p className="py-3 text-sm md:text-base">
-          Publish your internship to find the best intern for your project/company
+          Publish your internship to find the best intern for your
+          project/company
         </p>
       </div>
 
@@ -192,15 +247,13 @@ const CreatePost = () => {
               <label htmlFor="postDetails" className="py-3 font-bold">
                 Internship Details
               </label>
-              <textarea
-                className="py-3 px-4 border-[#E7E7F1] border-2 outline-none"
-                placeholder="Internship Details"
-                value={post.postDetails}
-                onChange={handleChange}
-                id="postDetails"
-                name="postDetails"
-                rows="4"
-              ></textarea>
+              <JoditEditor
+                ref={editor}
+                value={content}
+                config={config}
+                onBlur={handleBlur}
+                onChange={() => { }}
+              />
             </div>
 
             <div className="flex justify-center">
@@ -216,8 +269,7 @@ const CreatePost = () => {
         <ToastContainer />
       </div>
     </div>
+  );
+};
 
-  )
-}
-
-export default CreatePost
+export default CreatePost;
