@@ -104,11 +104,10 @@ const ViewDetails = () => {
                     <span className="font-medium">Start Date:</span>{" "}
                     {format(new Date(post.startDate), "dd.MM.yyyy")}
                   </p>
-                  <p>
-                    <span className="font-medium">Details:</span>{" "}
-                    {/* {post.postDetails || "No additional details available."} */}
-                    <div className="mt-5" dangerouslySetInnerHTML={{ __html: post.postDetails }} />
-                  </p>
+                  <div className="flex flex-col">
+                    <p className="font-medium">Details:</p>
+                    <div className="mt-5" id="internshipDetails" dangerouslySetInnerHTML={{ __html: post.postDetails }} />
+                  </div>
                 </div>
 
                 {/* Apply Button */}

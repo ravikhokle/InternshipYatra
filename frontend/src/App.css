@@ -1,3 +1,7 @@
 .jodit-status-bar__item-right{
     display: none;
 }
+
+#internshipDetails > h1{
+    color: red;
+}
