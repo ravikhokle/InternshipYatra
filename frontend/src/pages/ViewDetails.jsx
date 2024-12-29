@@ -107,7 +107,7 @@ const ViewDetails = () => {
                   <p>
                     <span className="font-medium">Details:</span>{" "}
                     {/* {post.postDetails || "No additional details available."} */}
-                    <div className="mt-5 text-sm" dangerouslySetInnerHTML={{ __html: post.postDetails }} />
+                    <div className="mt-5" dangerouslySetInnerHTML={{ __html: post.postDetails }} />
                   </p>
                 </div>
 
