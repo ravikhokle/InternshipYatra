@@ -48,50 +48,48 @@ const DisplayUserPosts = () => {
   return (
 
     <div className="px-5 md:px-16 lg:px-32 flex flex-col gap-5 mt-5 mb-5">
-  <table className="w-[100%] text-sm text-left text-gray-500  border border-gray-200 rounded-lg shadow-md">
-    <thead className="bg-gray-100 text-gray-700 uppercase text-xs">
-      <tr>
-        <th className="px-6 py-3">Title</th>
-        <th className="px-6 py-3">Applied Users</th>
-        <th className="px-6 py-3">Update</th>
-        <th className="px-6 py-3">Delete</th>
-      </tr>
-    </thead>
-    <tbody>
-      {userPosts.length > 0 ? (
-        userPosts.map((post) => (
-          <tr
-            key={post.id}
-            className="bg-white border-b hover:bg-gray-50 transition"
-          >
-            <td className="px-6 py-4">{post.title}</td>
-            <td className="px-6 py-4 text-blue-600 hover:underline">
-              <Link to={`/appliedusers/${post.id}`}>View</Link>
-            </td>
-            <td className="px-6 py-4 text-blue-600 hover:underline">
-              <Link to={`/updatepost/${post.id}`}>Edit</Link>
-            </td>
-            <td className="px-6 py-4 text-blue-600 hover:text-red-600 transition-colors cursor-pointer">
-            <span onClick={() => handleDeleteClick(post.id)}>
-            Delete
-            </span> 
-            </td>
+      <table className="w-[100%] text-sm text-left text-gray-500 border border-gray-200 rounded-lg shadow-md">
+        <thead className="bg-gray-100 text-gray-700 uppercase text-xs">
+          <tr>
+            <th className="px-2 py-3 sm:px-6">Title</th>
+            <th className="px-2 py-3 sm:px-6">Applied Users</th>
+            <th className="px-2 py-3 sm:px-6">Update</th>
+            <th className="px-2 py-3 sm:px-6">Delete</th>
           </tr>
-        ))
-      ) : (
-        <tr>
-          <td
-            colSpan="2"
-            className="px-6 py-4 text-center text-gray-400 italic"
-          >
-            No posts available.
-          </td>
-        </tr>
-      )}
-    </tbody>
-  </table>
-  <ToastContainer/>
-</div>
+        </thead>
+        <tbody>
+          {userPosts.length > 0 ? (
+            userPosts.map((post) => (
+              <tr
+                key={post.id}
+                className="bg-white border-b hover:bg-gray-50 transition"
+              >
+                <td className="px-2 py-4 sm:px-6">{post.title}</td>
+                <td className="px-2 py-4 sm:px-6 text-blue-600 hover:underline">
+                  <Link to={`/appliedusers/${post.id}`}>View</Link>
+                </td>
+                <td className="px-2 py-4 sm:px-6 text-blue-600 hover:underline">
+                  <Link to={`/updatepost/${post.id}`}>Edit</Link>
+                </td>
+                <td className="px-2 py-4 sm:px-6 text-blue-600 hover:text-red-600 transition-colors cursor-pointer">
+                  <span onClick={() => handleDeleteClick(post.id)}>Delete</span>
+                </td>
+              </tr>
+            ))
+          ) : (
+            <tr>
+              <td
+                colSpan="4"
+                className="px-2 py-4 sm:px-6 text-center text-gray-400 italic"
+              >
+                No posts available.
+              </td>
+            </tr>
+          )}
+        </tbody>
+      </table>
+      <ToastContainer />
+    </div>
   );
   
 };

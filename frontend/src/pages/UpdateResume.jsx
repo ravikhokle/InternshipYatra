@@ -70,14 +70,14 @@ const UpdateResume = () => {
               <img
                 src={resumeIcon}
                 alt="Resume Icon"
-                className="w-[50px] sm:w-[70px] my-5 shadow-[0_4px_10px_rgba(0,0,0,.3)] object-cover rounded-lg"
+                className="w-[50px] h-[50px] sm:w-[70px] sm:h-[70px] my-5 shadow-[0_4px_10px_rgba(0,0,0,.3)] object-cover rounded-lg"
               />
             </Link>
           ) : (
             <img
               src={resumeIcon}
               alt="Resume Icon"
-              className="w-[50px] sm:w-[70px] my-5 shadow-[0_4px_10px_rgba(0,0,0,.3)] object-cover rounded-lg"
+              className="w-[50px] h-[50px] sm:w-[70px] sm:h-[70px] my-5 shadow-[0_4px_10px_rgba(0,0,0,.3)] object-cover rounded-lg"
             />
           )}
         </label>
