@@ -1,6 +1,8 @@
 import axios from "axios";
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import { ToastContainer } from "react-toastify";
+import { handleError, handleSuccess } from "../Utils";
  
 
 const DisplayUserPosts = () => {
@@ -8,22 +10,40 @@ const DisplayUserPosts = () => {
 
   useEffect(() => {
     const fetchUserPosts = async () => {
-      const id = localStorage.getItem("userID");
+      const userId = localStorage.getItem("userID");
       const url = `${import.meta.env.VITE_API}/profile/userPosts`;
 
       try {
         const response = await axios.get(url, {
-          params: { _id: id },
+          params: { _id: userId },
         });
 
-        setUserPosts(response.data);
+        setUserPosts(response.data.reverse());
       } catch (error) {
-        console.error("Error while fetching user posts", error.response?.data || error.message);
+        handleError("Error while loading posts");
       }
     };
 
     fetchUserPosts();
   }, []);
+
+  
+  const handleDeleteClick = async (id) => {
+    try {
+      const response = await axios.delete(`${import.meta.env.VITE_API}/posts/deletepost`, {
+        data: { postId: id },
+      });
+  
+      if (response.data && response.data.success) {
+        handleSuccess(response.data.message);
+        setUserPosts((prevPosts) => prevPosts.filter((post) => post.id !== id));
+      } else {
+        handleError("Failed to delete the post");
+      }
+    } catch (error) {
+      handleError("Error while deleting post");
+    }
+  };
 
   return (
 
@@ -33,6 +53,8 @@ const DisplayUserPosts = () => {
       <tr>
         <th className="px-6 py-3">Title</th>
         <th className="px-6 py-3">Applied Users</th>
+        <th className="px-6 py-3">Update</th>
+        <th className="px-6 py-3">Delete</th>
       </tr>
     </thead>
     <tbody>
@@ -45,6 +67,14 @@ const DisplayUserPosts = () => {
             <td className="px-6 py-4">{post.title}</td>
             <td className="px-6 py-4 text-blue-600 hover:underline">
               <Link to={`/appliedusers/${post.id}`}>View</Link>
+            </td>
+            <td className="px-6 py-4 text-blue-600 hover:underline">
+              <Link to={`/updatepost/${post.id}`}>Edit</Link>
+            </td>
+            <td className="px-6 py-4 text-blue-600 hover:text-red-600 transition-colors cursor-pointer">
+            <span onClick={() => handleDeleteClick(post.id)}>
+            Delete
+            </span> 
             </td>
           </tr>
         ))
@@ -60,6 +90,7 @@ const DisplayUserPosts = () => {
       )}
     </tbody>
   </table>
+  <ToastContainer/>
 </div>
   );
   

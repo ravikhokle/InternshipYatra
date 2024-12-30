@@ -15,9 +15,10 @@ import UpdateResume from './pages/UpdateResume';
 import UpdateProfileImg from './pages/UpdateProfileImg'
 import UpdateCompanyLogo from './pages/UpdateCompanyLogo'
 import PublicProfile from './pages/PublicProfile';
-import AppliedUsers from './pages/appliedUsers';
 import DisplayUserPosts from './pages/DisplayUserPosts';
 import ViewDetails from './pages/ViewDetails';
+import AppliedUsers from './pages/AppliedUsers';
+import UpdatePost from './pages/UpdatePost';
 
 function App() {
 
@@ -33,6 +34,7 @@ function App() {
         <Route path='*' element={<NotFound/>}/>
         <Route path="/publicprofile/:id" element={<PublicProfile />} />
         <Route path='/internship/:id' element={<ViewDetails/>}/>
+        <Route path="/updatepost/:id" element={<UpdatePost />} />
 
         <Route element={<ProtectedRoutes/>}>
           <Route path='/profile' element={<UserProfile/>}/>

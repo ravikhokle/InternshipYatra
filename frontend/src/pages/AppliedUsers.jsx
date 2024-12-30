@@ -15,7 +15,7 @@ const AppliedUsers = () => {
           params: { postId: id },
         });
 
-        setAppliedUsersData(response.data);
+        setAppliedUsersData(response.data.reverse());
 
       } catch (error) {
         console.error("Error while fetching applied users", error.response?.data || error.message);

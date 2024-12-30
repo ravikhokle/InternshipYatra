@@ -1,131 +1,158 @@
-import { useState } from "react";
+import React, { useEffect, useState, useRef } from 'react';
+import axios from 'axios';
+import { Link, useParams, useNavigate } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import { handleError, handleSuccess } from "../Utils";
-import { useNavigate } from "react-router-dom";
-import React, { useRef } from "react";
 import JoditEditor from "jodit-react";
 
-const CreatePost = () => {
+const UpdatePost = () => {
+  const { id } = useParams();
   const editor = useRef(null);
   const [content, setContent] = React.useState("");
+    const [post, setPost] = useState({
+      title: "",
+      companyName: "",
+      skills: "",
+      stipend: "",
+      location: "",
+      duration: "",
+      startDate: "",
+      postId: "",
+      postDetails: content,
+      userId: localStorage.getItem("userID"),
+    });
+
+    useEffect(() => {
+      const fetchPost = async () => {
+        try {
+          const response = await axios.get(`${import.meta.env.VITE_API}/posts/findpost`, {
+            params: { id },
+          });
+    
+          const postData = response.data;
+
+          // format "yyyy-MM-dd"
+          const formattedDate = new Date(postData.startDate).toISOString().split('T')[0];
+    
+          setPost({
+            ...postData,
+            startDate: formattedDate,
+          });
+          setPost({
+            ...postData,
+            startDate: formattedDate, postId: id,
+          });
+          setContent(postData.postDetails); 
+        } catch (error) {
+          console.error('Error fetching post:', error);
+        }
+      };
+    
+      fetchPost();
+    }, [id]);
+    
 
   const myButtons = [
-    "paragraph",
-    "bold",
-    "italic",
-    "underline",
-    "spellcheck",
-    "|",
-    "ul",
-    "ol",
-    "|",
-    "link",
-    "image",
-    "fullsize",
-  ];
+      "paragraph",
+      "bold",
+      "italic",
+      "underline",
+      "spellcheck",
+      "|",
+      "ul",
+      "ol",
+      "|",
+      "link",
+      "image",
+      "fullsize",
+    ];
+  
+    const config = {
+      buttons: myButtons,
+      buttonsMD: myButtons,
+      buttonsSM: myButtons,
+      buttonsXS: myButtons,
+      placeholder: "Start typing here...",
+      toolbarAdaptive: true,
+      toolbarSticky: false,
+    };
+  
+    const handleBlur = (newContent) => {
+      setContent(newContent);
+    };
+  
+    // jodit end
 
-  const config = {
-    buttons: myButtons,
-    buttonsMD: myButtons,
-    buttonsSM: myButtons,
-    buttonsXS: myButtons,
-    placeholder: "Start typing here...",
-    toolbarAdaptive: true,
-    toolbarSticky: false,
-  };
-
-  const handleBlur = (newContent) => {
-    setContent(newContent);
-  };
-
-  // jodit end
-
-  const [post, setPost] = useState({
-    title: "",
-    companyName: "",
-    skills: "",
-    stipend: "",
-    location: "",
-    duration: "",
-    startDate: "",
-    postDetails: content,
-    userId: localStorage.getItem("userID"),
-  });
-
-  const navigate = useNavigate();
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    const copyPost = { ...post };
-    copyPost[name] = value;
-    setPost(copyPost);
-  };
-
-  const handleCreatePost = async (event) => {
-    event.preventDefault();
-
-    const updatedPost = { ...post, postDetails: content };
-
-    const {
-      title,
-      companyName,
-      skills,
-      stipend,
-      location,
-      duration,
-      startDate,
-      postDetails,
-    } = updatedPost;
-
-    if (
-      !title ||
-      !companyName ||
-      !skills ||
-      !stipend ||
-      !location ||
-      !duration ||
-      !startDate ||
-      !postDetails
-    ) {
-      return handleError("All Fields are required");
-    }
-
-    try {
-      const url = `${import.meta.env.VITE_API}/posts/create`;
-      const response = await fetch(url, {
-        method: "Post",
-        headers: {
-          Authorization: localStorage.getItem("token"),
-          "Content-Type": "Application/json",
-        },
-        body: JSON.stringify(updatedPost),
-      });
-      const result = await response.json();
-      const { message, success, error } = result;
-      if (success) {
-        handleSuccess(message);
-        setTimeout(() => {
-          navigate("/");
-        }, 1000);
-      } else if (error) {
-        const details = error?.details[0].message;
-        handleError(details);
-      } else if (!success) {
-        handleError(message);
+    const navigate = useNavigate();
+  
+    const handleChange = (e) => {
+      const { name, value } = e.target;
+      const copyPost = { ...post };
+      copyPost[name] = value;
+      setPost(copyPost);
+    };
+  
+    const handleCreatePost = async (event) => {
+      event.preventDefault();
+  
+      const updatedPost = { ...post, postDetails: content };
+  
+      const {
+        title,
+        companyName,
+        skills,
+        stipend,
+        location,
+        duration,
+        startDate,
+        postDetails,
+      } = updatedPost;
+  
+      if (
+        !title ||
+        !companyName ||
+        !skills ||
+        !stipend ||
+        !location ||
+        !duration ||
+        !startDate ||
+        !postDetails
+      ) {
+        return handleError("All Fields are required");
       }
-    } catch (error) {
-      handleError(error);
-    }
-  };
+  
+      try {
+        const url = `${import.meta.env.VITE_API}/posts/updatepost`;
+        const response = await fetch(url, {
+          method: "PUT",
+          headers: {
+            Authorization: localStorage.getItem("token"),
+            "Content-Type": "Application/json",
+          },
+          body: JSON.stringify(post),
+        });
+        const result = await response.json();
+        const { message, success, error } = result;
+        if (success) {
+          handleSuccess(message);
+          setTimeout(() => {
+            navigate("/userposts");
+          }, 1000);
+        } else if (error) {
+          const details = error?.details[0].message;
+          handleError(details);
+        } else if (!success) {
+          handleError(message);
+        }
+      } catch (error) {
+        handleError(error);
+      }
+    };
 
   return (
-    <div className="px-5 md:px-10 lg:px-32 flex flex-col pb-10 bg-gray-100">
-      <div className="mt-8">
-        <h1 className="text-2xl md:text-4xl font-[600]">Post an internship</h1>
-        <p className="py-3 text-sm md:text-base">
-          Publish your internship to find the best intern for your
-          project/company
-        </p>
+<div className="px-5 md:px-10 lg:px-32 flex flex-col pb-10 bg-gray-100">
+      <div className="mt-8 mb-4">
+        <h1 className="text-2xl md:text-4xl font-[600]">Update Internship</h1>
       </div>
 
       <div>
@@ -271,4 +298,4 @@ const CreatePost = () => {
   );
 };
 
-export default CreatePost;
+export default UpdatePost;
