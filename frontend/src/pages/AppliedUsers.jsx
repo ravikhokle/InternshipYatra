@@ -15,7 +15,7 @@ const AppliedUsers = () => {
           params: { postId: id },
         });
 
-        setAppliedUsersData(response.data);
+        setAppliedUsersData(response.data.reverse());
 
       } catch (error) {
         console.error("Error while fetching applied users", error.response?.data || error.message);
@@ -58,7 +58,7 @@ const AppliedUsers = () => {
                 </Link>
               </td>
               <td className="px-4 md:px-6 py-4 text-blue-600 hover:underline">
-                <Link target="_blank" to={`/publicprofile/${user.userId}`}>View Profile</Link>
+                <Link to={`/publicprofile/${user.userId}`}>View Profile</Link>
               </td>
             </tr>
           ))}

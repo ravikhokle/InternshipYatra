@@ -106,7 +106,7 @@ const CreatePost = () => {
         handleSuccess(message);
         setTimeout(() => {
           navigate("/");
-        }, 3000);
+        }, 1000);
       } else if (error) {
         const details = error?.details[0].message;
         handleError(details);
@@ -141,6 +141,7 @@ const CreatePost = () => {
                 type="text"
                 id="title"
                 name="title"
+                autoFocus
                 placeholder="Add internship title"
                 value={post.title}
               />

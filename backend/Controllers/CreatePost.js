@@ -9,7 +9,7 @@ const CreatePost = async (req, res) => {
         await newPost.save();
         
         res.status(200).json({
-            message: "Your internship was published",
+            message: "Your internship is published",
             success: true
         });
     } catch (error) {

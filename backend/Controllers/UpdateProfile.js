@@ -24,7 +24,7 @@ const updateProfile = async (req, res) => {
         if (email) {
             const emailExists = await User.findOne({ email, _id: { $ne: _id } });
             if (emailExists) {
-                return res.status(400).json({ message: 'Email already exists.' });
+                return res.status(400).json({ message: 'This email is already used in other account.' });
             }
         }
 
