@@ -95,7 +95,7 @@ const SignUp = () => {
             <img
               src={SignUpInfo.previewImage || profilePlaceHolder}
               alt="Profile Preview"
-              className="w-[60px] h-[60px] sm:w-[80px] sm:h-[80px] rounded-full my-5 shadow-[0_4px_10px_rgba(0,0,0,.3)] object-cover"
+              className="w-[60px] sm:w-[80px] rounded-full my-5 shadow-[0_4px_10px_rgba(0,0,0,.3)] object-cover"
             />
           </label>
           <input
@@ -118,7 +118,6 @@ const SignUp = () => {
             type="text"
             id="name"
             name="name"
-            autoFocus
             placeholder="Enter your full name"
             value={SignUpInfo.name}
           />
