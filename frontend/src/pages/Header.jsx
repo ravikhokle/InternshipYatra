@@ -20,7 +20,7 @@ const Header = () => {
     handleSuccess("Logged out");
     setTimeout(() => {
       navigate("/login");
-    }, 1000);
+    }, 2000);
   };
 
   const [loginComponent, setLoginComponent] = useState(null);
@@ -63,7 +63,7 @@ const Header = () => {
         <Link to="/profile" className="sm:mr-3 md:mr-5 flex items-center">
           {/* <span className="text-xs md:text-sm mr-2">Me</span> */}
           <img
-            className="rounded-full w-[40px] h-[40px] md:w-[45px] md:h-[45px] drop-shadow-lg"
+            className="rounded-full w-[40px] md:w-[45px] drop-shadow-lg"
             src={ProfileImg}
             alt="Profile"
           />

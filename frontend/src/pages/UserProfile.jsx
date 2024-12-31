@@ -71,17 +71,17 @@ const UserProfile = () => {
           <img
             src={profile.profileImgURL || profilePlaceHolder}
             alt="Profile Picture"
-            className="w-[100px] h-[100px] md:w-[150px] md:h-[150px] rounded-full shadow-lg object-cover"
+            className="w-[100px] md:w-[150px] rounded-full shadow-lg object-cover"
           />
           <Link to="/updateprofileimage">
-            <img src={editIcon} alt="Edit icon" className="w-4 h-4 cursor-pointer" />
+            <img src={editIcon} alt="Edit icon" className="w-4 cursor-pointer" />
           </Link>
         </div>
         <div className="mt-5 flex flex-col gap-3">
           <div className="flex gap-3 items-center">
             <p className="text-lg md:text-xl font-medium">Name: {profile.name}</p>
             <Link to="/updateprofile">
-              <img src={editIcon} alt="Edit icon" className="w-4 h-4 cursor-pointer" />
+              <img src={editIcon} alt="Edit icon" className="w-4 cursor-pointer" />
             </Link>
           </div>
           <p>Email: <span className="text-gray-600">{profile.email}</span></p>
@@ -95,10 +95,10 @@ const UserProfile = () => {
               className="text-blue-500 font-medium hover:underline flex items-center gap-2"
             >
               Resume
-              <img className="w-[16px] h-[16px] md:w-[18px] md:h-[18px]" src={resumeIcon} alt="Resume Icon" />
+              <img className="w-[16px] md:w-[18px] h-[16px] md:h-[18px]" src={resumeIcon} alt="Resume Icon" />
             </Link>
             <Link to="/updateresume">
-              <img src={editIcon} alt="Edit icon" className="w-4 h-4 cursor-pointer" />
+              <img src={editIcon} alt="Edit icon" className="w-4 cursor-pointer" />
             </Link>
           </div>
           <button onClick={handleLogout} className="md:hidden">
@@ -115,10 +115,10 @@ const UserProfile = () => {
           <img
             src={profile.companyLogoURL || companyPlaceHolder}
             alt="Company Logo"
-            className="w-[80px] h-[80px] md:w-[120px] md:h-[120px] rounded-full shadow-lg object-cover"
+            className="w-[80px] md:w-[120px] rounded-full shadow-lg object-cover"
           />
           <Link to="/updatecompanylogo">
-            <img src={editIcon} alt="Edit icon" className="w-4 h-4" />
+            <img src={editIcon} alt="Edit icon" className="w-4" />
           </Link>
         </div>
 
