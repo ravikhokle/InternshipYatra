@@ -15,7 +15,7 @@ DBConnect();
 
 // CORS middleware
 app.use(cors({
-    origin: 'https://internship-kro-done.onrender.com', // Frontend origin
+    origin: 'https://pubglite.me/', // Frontend origin
     methods: ['GET', 'POST', 'PUT', 'DELETE'], // Allowed HTTP methods
     allowedHeaders: ['Authorization', 'Content-Type'], // Allowed headers
 }));
