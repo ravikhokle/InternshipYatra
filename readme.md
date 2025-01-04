@@ -42,3 +42,4 @@ Guidelines for contributing to the project.
 4. Commit your changes (`git commit -m 'Add some feature'`).
 5. Push to the branch (`git push origin feature-branch`).
 6. Open a pull request.
+```bash
