@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "axios": "^1.7.9",
+    "backend": "file:..",
     "date-fns": "^4.1.0",
     "jodit-react": "^4.1.2",
     "notenv": "^2.0.3",
