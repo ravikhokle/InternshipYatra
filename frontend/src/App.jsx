@@ -35,10 +35,10 @@ function App() {
         <Route path="/publicprofile/:id" element={<PublicProfile />} />
         <Route path='/internship/:id' element={<ViewDetails/>}/>
         <Route path="/updatepost/:id" element={<UpdatePost />} />
+        <Route path='/updateprofile' element={<UpdateProfile/>}/>
 
         <Route element={<ProtectedRoutes/>}>
           <Route path='/profile' element={<UserProfile/>}/>
-          <Route path='/updateprofile' element={<UpdateProfile/>}/>
           <Route path='/updateresume' element={<UpdateResume/>}/>
           <Route path='/updateprofileimage' element={<UpdateProfileImg/>}/>
           <Route path='/updatecompanylogo' element={<UpdateCompanyLogo/>}/>
