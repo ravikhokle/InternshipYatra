@@ -19,3 +19,43 @@ Internship Kro is a web-based platform that connects students with internship op
 - **File Storage**: Cloudinary
 - **Notifications**: Toastify
 - **Version Control**: Git, GitHub
+
+### Build and Run
+
+To build and run the project locally, follow these steps:
+
+1. **Clone the repository**:
+    ```sh
+    git clone https://github.com/ravikhokle/Internship-Kro-Done.git
+    cd internship-kro
+    ```
+
+2. **Install dependencies**:
+    ```sh
+    npm install
+    ```
+
+3. **Set up environment variables**:
+    Create a `.env` file in the root directory and add the following variables:
+    ```env
+    MONGODB_URI=your_mongodb_uri
+    CLOUDINARY_URL=your_cloudinary_url
+    JWT_SECRET=your_jwt_secret
+    ```
+
+4. **Run the development server**:
+    ```sh
+    npm run dev
+    ```
+
+5. **Build for production**:
+    ```sh
+    npm run build
+    ```
+
+6. **Start the production server**:
+    ```sh
+    npm start
+    ```
+
+The application should now be running at `http://localhost:3000`.
