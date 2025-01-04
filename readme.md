@@ -5,9 +5,9 @@ Internship Kro is a web-based platform that connects students with internship op
 ### Key Features:
 - **Interns**: Apply for internships, create a profile, and submit their resumes.
 - **HR**: Publish, update, and delete internship listings, and view applicants' profiles and resumes.
-- **Authentication**: JWT for secure authentication and role-based access (intern or HR).
+- **Authentication**: JWT for secure authentication.
 - **Security**: bcrypt for hashing passwords.
-- **Cloud Storage**: Cloudinary for storing images (e.g., profile pictures).
+- **Cloud Storage**: Cloudinary for storing images.
 - **Database**: MongoDB hosted on Atlas for secure data storage.
 - **User Notifications**: Toastify for displaying success/error messages in the UI.
 
