@@ -1,8 +1,8 @@
-# Internship Kro
+# InternshipYatra
 
-Link - pubglite.me it's just a random domain so i have used it.
+Link - https://internshipyatra.ravikhokle.site
 
-Internship Kro is a web-based platform that connects students with internship opportunities, enabling seamless interaction between students and HR professionals. Interns can apply for internships, while HR can manage internship postings and review applicants' resumes and profiles.
+InternshipYatra is a web-based platform that connects students with internship opportunities, enabling seamless interaction between students and HR professionals. Interns can apply for internships, while HR can manage internship postings and review applicants' resumes and profiles.
 
 ### Key Features:
 - **Interns**: Apply for internships, create a profile, and submit their resumes.

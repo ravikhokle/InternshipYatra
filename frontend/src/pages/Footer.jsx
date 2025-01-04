@@ -40,7 +40,7 @@ const Footer = () => {
     <p className="text-sm md:text-base">
       &#169; {new Date().getFullYear()}{" "}
       <Link to="/" className="text-purple-600 hover:underline">
-        Internship Kro
+      InternshipYatra
       </Link>{" "}
       - All rights reserved.
     </p>

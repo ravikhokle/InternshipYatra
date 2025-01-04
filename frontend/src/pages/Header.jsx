@@ -76,7 +76,7 @@ const Header = () => {
   return (
     <header className="flex flex-wrap justify-between items-center content-center py-4 px-5 sm:px-9 md:px-10 lg:px-32 bg-white shadow-md">
       <h1 className="text-purple-600 text-xl md:text-2xl sm:xl">
-        <Link to="/">Internship Kro</Link>
+        <Link to="/">InternshipYatra</Link>
       </h1>
       <ul className="sm:flex flex-wrap gap-4 md:gap-10 items-center hidden">
         <li>
