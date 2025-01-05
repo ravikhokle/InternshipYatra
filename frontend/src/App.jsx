@@ -18,7 +18,7 @@ import DisplayUserPosts from './pages/DisplayUserPosts';
 import ViewDetails from './pages/ViewDetails';
 import AppliedUsers from './pages/AppliedUsers';
 import UpdatePost from './pages/UpdatePost';
-import UpdateProfile from './pages/UpdateProfile';
+import UpdateUserProfile from './pages/UpdateUserProfile';
 
 function App() {
 
@@ -37,7 +37,7 @@ function App() {
 
         <Route element={<ProtectedRoutes/>}>
           <Route path='/profile' element={<UserProfile/>}/>
-          <Route path='/updateprofile' element={<UpdateProfile/>}/>
+          <Route path='/updateprofile' element={<UpdateUserProfile/>}/>
           <Route path='/updateresume' element={<UpdateResume/>}/>
           <Route path='/updateprofileimage' element={<UpdateProfileImg/>}/>
           <Route path='/updatecompanylogo' element={<UpdateCompanyLogo/>}/>

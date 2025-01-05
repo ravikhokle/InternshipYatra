@@ -6,7 +6,7 @@ import { ToastContainer } from "react-toastify";
 import { handleError, handleSuccess } from "../Utils";
  
 
-const UpdateProfile = () => {
+const UpdateUserProfile = () => {
   const [user, updateUser] = useState({
     name: "",
     email: "",
@@ -223,4 +223,4 @@ const UpdateProfile = () => {
   );
 };
 
-export default UpdateProfile;
+export default UpdateUserProfile;
