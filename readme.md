@@ -1,6 +1,6 @@
 # InternshipYatra
 
-Link - https://internshipyatra.ravikhokle.site
+Link - internshipyatra.ravikhokle.site
 
 InternshipYatra is a web-based platform that connects students with internship opportunities, enabling seamless interaction between students and HR professionals. Interns can apply for internships, while HR can manage internship postings and review applicants' resumes and profiles.
 
@@ -28,8 +28,8 @@ To build and run the project locally, follow these steps:
 
 1. **Clone the repository**:
     ```sh
-    git clone https://github.com/ravikhokle/Internship-Kro-Done.git
-    cd internship-kro-done
+    git clone https://github.com/ravikhokle/InternshipYatra.git
+    cd InternshipYatra
     ```
 
 2. **Install dependencies**:
@@ -40,9 +40,13 @@ To build and run the project locally, follow these steps:
 3. **Set up environment variables**:
     Create a `.env` file in the root directory and add the following variables:
     ```env
-    MONGODB_URI=your_mongodb_uri
+    URI=your_mongodb_uri
+    JWT_SECRATE=your_jwt_secret
+    PORT=5000
+    CLOUDINARY_API_KEY=your_cloudinary_apikey
+    CLOUDINARY_CLOUD_NAME=your_cloudinary_cloudName
+    CLOUDINARY_API_SECRET=your_cloudinary_secret
     CLOUDINARY_URL=your_cloudinary_url
-    JWT_SECRET=your_jwt_secret
     ```
 
 4. **Run the development server**:
