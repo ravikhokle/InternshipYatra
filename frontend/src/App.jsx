@@ -37,7 +37,7 @@ function App() {
 
         <Route element={<ProtectedRoutes/>}>
           <Route path='/profile' element={<UserProfile/>}/>
-          <Route path='/updateprofile' element={<UpdateUserProfile/>}/>
+          <Route path='/updateuserprofile' element={<UpdateUserProfile/>}/>
           <Route path='/updateresume' element={<UpdateResume/>}/>
           <Route path='/updateprofileimage' element={<UpdateProfileImg/>}/>
           <Route path='/updatecompanylogo' element={<UpdateCompanyLogo/>}/>

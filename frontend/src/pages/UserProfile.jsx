@@ -80,7 +80,7 @@ const UserProfile = () => {
         <div className="mt-5 flex flex-col gap-3">
           <div className="flex gap-3 items-center">
             <p className="text-lg md:text-xl font-medium">Name: {profile.name}</p>
-            <Link to="/updateprofile">
+            <Link to="/updateuserprofile">
               <img src={editIcon} alt="Edit icon" className="w-4 h-4 cursor-pointer" />
             </Link>
           </div>
