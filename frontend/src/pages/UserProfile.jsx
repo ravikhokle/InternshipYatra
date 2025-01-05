@@ -81,7 +81,7 @@ const UserProfile = () => {
           <div className="flex gap-3 items-center">
             <p className="text-lg md:text-xl font-medium">Name: {profile.name}</p>
             <Link to="/updateuserprofile">
-              update<img src={editIcon} alt="Edit icon" className="w-4 h-4 cursor-pointer" />
+              <img src={editIcon} alt="Edit icon" className="w-4 h-4 cursor-pointer" />
             </Link>
           </div>
           <p>Email: <span className="text-gray-600">{profile.email}</span></p>
