@@ -3,7 +3,6 @@ import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import { handleSuccess } from "../Utils";
-import homeIcon from "../assets/Images/homeIcon.png"
 
 const Header = () => {
   const isToken = localStorage.getItem("token");
@@ -38,7 +37,7 @@ const Header = () => {
       );
       setSignUpComponent(
         <div className="flex flex-row gap-6 items-center">
-        <Link to="/" className="sm:hidden"><img className="w-8 h-8 mr-4" src={homeIcon} alt="Home Icon"/></Link>
+        <Link to="/" className="sm:hidden"><img className="w-8 h-8 mr-4" src="https://res.cloudinary.com/db1xxbbat/image/upload/v1736079369/frontend/sr8zpyswicaq7lyx8wbi.png" alt="Home Icon"/></Link>
         <Link
           to="/signup"
           className="text-purple-600 rounded border-2 border-purple-600 px-4 py-2 md:px-8 md:py-3 mr-3 md:mr-5 hidden sm:flex"
@@ -59,7 +58,7 @@ const Header = () => {
       );
       setSignUpComponent(
         <div className="flex flex-row gap-6 items-center">
-         <Link to="/" className="sm:hidden w-8"><img src={homeIcon} alt="Home Icon"/></Link>
+         <Link to="/" className="sm:hidden w-8"><img src="https://res.cloudinary.com/db1xxbbat/image/upload/v1736079369/frontend/sr8zpyswicaq7lyx8wbi.png" alt="Home Icon"/></Link>
         <Link to="/profile" className="sm:mr-3 md:mr-5 flex items-center">
           {/* <span className="text-xs md:text-sm mr-2">Me</span> */}
           <img

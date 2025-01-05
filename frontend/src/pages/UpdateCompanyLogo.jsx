@@ -1,6 +1,5 @@
 import { useState } from "react";
 import axios from "axios";
-import companyPlaceHolder from '../assets/Images/companyPlaceHolder.png';
 import { useNavigate } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import { handleError, handleSuccess } from "../Utils";
@@ -62,7 +61,7 @@ const UpdateCompanyLogo = () => {
       <div className="flex flex-col items-center md:items-start">
         <label htmlFor="companyLogo" className="cursor-pointer">
           <img
-            src={user.previewCompanyLogo || companyPlaceHolder}
+            src={user.previewCompanyLogo || "https://res.cloudinary.com/db1xxbbat/image/upload/v1736079369/frontend/i0qh0dcvftwjvbdmw4ou.png"}
             alt="Preview Company Logo"
             className="w-[80px] h-[80px] md:w-[100px] md:h-[100px] rounded-full my-5 shadow-[0_4px_10px_rgba(0,0,0,.3)] object-cover"
           />

@@ -1,6 +1,4 @@
 import { Link } from "react-router-dom";
-import GithubLogo from "../assets/Images/github.png";
-import LinkedinLogo from "../assets/Images/linkedin.png";
 
 const Footer = () => {
   return (
@@ -13,7 +11,7 @@ const Footer = () => {
     <p className="text-lg font-semibold">Made with 🖤 by Ravi Khokle</p>
     <div className="flex flex-col gap-2">
       <p className="flex gap-2 items-center">
-        <img src={LinkedinLogo} alt="Linkedin Logo" className="w-5 h-5" />
+        <img src="https://res.cloudinary.com/db1xxbbat/image/upload/v1736079369/frontend/morvflgwmevg7f8mznch.png" alt="Linkedin Logo" className="w-5 h-5" />
         <Link
           className="text-blue-600 hover:underline"
           target="_blank"
@@ -23,7 +21,7 @@ const Footer = () => {
         </Link>
       </p>
       <p className="flex gap-2 items-center">
-        <img src={GithubLogo} alt="Github Logo" className="w-5 h-5" />
+        <img src="https://res.cloudinary.com/db1xxbbat/image/upload/v1736079368/frontend/k0mnhxfaajvxazphfeyx.png" alt="Github Logo" className="w-5 h-5" />
         <Link
           className="text-blue-600 hover:underline"
           target="_blank"

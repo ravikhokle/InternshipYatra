@@ -1,6 +1,5 @@
 import { useState } from "react";
 import axios from "axios";
-import resumeIcon from "../assets/Images/resume.png";
 import { Link } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import { handleError, handleSuccess } from "../Utils";
@@ -68,14 +67,14 @@ const UpdateResume = () => {
             <Link to={user.previewResume} target="_blank">
               View Resume{" "}
               <img
-                src={resumeIcon}
+                src="https://res.cloudinary.com/db1xxbbat/image/upload/v1736079371/frontend/ivw2oggiei4fzzifq9bz.png"
                 alt="Resume Icon"
                 className="w-[50px] h-[50px] sm:w-[70px] sm:h-[70px] my-5 shadow-[0_4px_10px_rgba(0,0,0,.3)] object-cover rounded-lg"
               />
             </Link>
           ) : (
             <img
-              src={resumeIcon}
+              src="https://res.cloudinary.com/db1xxbbat/image/upload/v1736079371/frontend/ivw2oggiei4fzzifq9bz.png"
               alt="Resume Icon"
               className="w-[50px] h-[50px] sm:w-[70px] sm:h-[70px] my-5 shadow-[0_4px_10px_rgba(0,0,0,.3)] object-cover rounded-lg"
             />

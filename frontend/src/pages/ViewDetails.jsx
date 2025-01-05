@@ -1,8 +1,6 @@
 import axios from "axios";
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
-import companyPlaceHolder from "../assets/Images/companyPlaceHolder.png";
-import GPS from "../assets/Images/gps.png";
 import { format } from "date-fns";
 import { handleError, handleSuccess } from "../Utils";
 import { ToastContainer } from "react-toastify";
@@ -75,14 +73,14 @@ const ViewDetails = () => {
                 <div className="flex items-center justify-between mb-6">
                   <div className="flex items-center gap-3">
                     <img
-                      src={post.companyLogoURL || companyPlaceHolder}
+                      src={post.companyLogoURL || "https://res.cloudinary.com/db1xxbbat/image/upload/v1736079369/frontend/i0qh0dcvftwjvbdmw4ou.png"}
                       alt={post.companyName}
                       className="w-12 h-12 rounded-full border border-gray-300"
                     />
                     <p className="font-medium text-gray-700">{post.companyName}</p>
                   </div>
                   <div className="flex items-center gap-2 text-gray-500">
-                    <img src={GPS} alt="Location icon" className="w-5 h-5" />
+                    <img src="https://res.cloudinary.com/db1xxbbat/image/upload/v1736079369/frontend/mzlc3oiapgd35xwrb2jt.png" alt="Location icon" className="w-5 h-5" />
                     <p>{post.location}</p>
                   </div>
                 </div>

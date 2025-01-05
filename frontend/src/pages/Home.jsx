@@ -2,10 +2,6 @@ import { useEffect, useState } from "react";
 import { handleError, handleSuccess } from "../Utils";
 import { ToastContainer } from "react-toastify";
 import { format } from "date-fns";
-import serachIcon from "../assets/Images/search-icon.png";
-import laptopImg from "../assets/Images/laptop girl.jpg";
-import companyPlaceHolder from "../assets/Images/companyPlaceHolder.png";
-import GPS from "../assets/Images/gps.png";
 import axios from "axios";
 import { Link } from "react-router-dom";
  
@@ -85,7 +81,7 @@ const Home = () => {
             <div className="py-3 mt-5  md:mr-10 sm:px-5 sm:py-5 sm:mr-0  flex items-center bg-white rounded-md shadow-sm">
               <img
                 className="h-5 px-3"
-                src={serachIcon}
+                src="https://res.cloudinary.com/db1xxbbat/image/upload/v1736079370/frontend/cohzy0fnjfdq5y4hnoop.png"
                 alt="Search Icon"
               />
               <input
@@ -108,8 +104,8 @@ const Home = () => {
           <div className="flex items-center justify-center w-full lg:w-[50%]">
             <img
               className="rounded-md shadow-[0_4px_10px_rgba(0,0,0,.5)] max-w-full"
-              src={laptopImg}
-              alt="laptop image"
+              src="https://res.cloudinary.com/db1xxbbat/image/upload/v1736079377/frontend/elbniakmztqdfer8n4hc.jpg"
+              alt="laptop girl"
             />
           </div>
         </div>
@@ -137,13 +133,13 @@ const Home = () => {
                   <div className="flex items-center gap-2">
                     <img
                       className="w-[50px] h-[50px] rounded-full shadow-md"
-                      src={post.companyLogoURL || companyPlaceHolder}
+                      src={post.companyLogoURL || "https://res.cloudinary.com/db1xxbbat/image/upload/v1736079369/frontend/i0qh0dcvftwjvbdmw4ou.png"}
                       alt={post.companyName}
                     />
                     <p className="text-sm md:text-base">{post.companyName}</p>
                   </div>
                   <div className="flex items-center gap-1">
-                    <img className="h-[18px]" src={GPS} alt="Location icon" />
+                    <img className="h-[18px]" src="https://res.cloudinary.com/db1xxbbat/image/upload/v1736079369/frontend/mzlc3oiapgd35xwrb2jt.png" alt="Location icon" />
                     <p className="text-sm md:text-base">{post.location}</p>
                   </div>
                 </div>

@@ -2,7 +2,6 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import { handleError, handleSuccess } from "../Utils";
-import profilePlaceHolder from "../assets/Images/profilePlaceHolder.png";
  
 
 const SignUp = () => {
@@ -93,7 +92,7 @@ const SignUp = () => {
         <div className="flex items-center gap-3">
           <label htmlFor="profileImage" className="text-xl">
             <img
-              src={SignUpInfo.previewImage || profilePlaceHolder}
+              src={SignUpInfo.previewImage || "https://res.cloudinary.com/db1xxbbat/image/upload/v1736079370/frontend/umzlgcigwtajqrqhrtct.png"}
               alt="Profile Preview"
               className="w-[60px] h-[60px] sm:w-[80px] sm:h-[80px] rounded-full my-5 shadow-[0_4px_10px_rgba(0,0,0,.3)] object-cover"
             />

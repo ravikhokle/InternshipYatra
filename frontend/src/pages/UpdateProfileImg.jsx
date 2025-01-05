@@ -1,6 +1,5 @@
 import { useState } from "react";
 import axios from "axios";
-import profilePlaceHolder from "../assets/Images/profilePlaceHolder.png";
 import { useNavigate } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import { handleError, handleSuccess } from "../Utils";
@@ -62,7 +61,7 @@ const UpdateProfileImg = () => {
       <div className="flex flex-col items-center md:items-start">
         <label htmlFor="profileImage" className="cursor-pointer">
           <img
-            src={user.previewProfileImage || profilePlaceHolder}
+            src={user.previewProfileImage || "https://res.cloudinary.com/db1xxbbat/image/upload/v1736079370/frontend/umzlgcigwtajqrqhrtct.png"}
             alt="Profile Preview"
             className="w-[80px] h-[80px] md:w-[100px] md:h-[100px] rounded-full my-5 shadow-[0_4px_10px_rgba(0,0,0,.3)] object-cover"
           />

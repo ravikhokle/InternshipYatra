@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { handleError } from "../Utils";
 import { ToastContainer } from "react-toastify";
-import profilePlaceHolder from "../assets/Images/profilePlaceHolder.png";
 import axios from "axios";
  
 
@@ -45,7 +44,7 @@ const PublicProfile = () => {
     </h1>
     <div className="flex justify-center mb-6">
       <img
-        src={userData.profileImgURL || profilePlaceHolder}
+        src={userData.profileImgURL || "https://res.cloudinary.com/db1xxbbat/image/upload/v1736079370/frontend/umzlgcigwtajqrqhrtct.png"}
         alt="Profile Picture"
         className="w-[150px] h-[150px] rounded-full shadow-md object-cover border-4 border-gray-100"
       />

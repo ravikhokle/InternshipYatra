@@ -2,10 +2,6 @@ import { useEffect, useState } from "react";
 import { handleError, handleSuccess} from "../Utils";
 import { ToastContainer, toast } from "react-toastify";
 import { Link } from "react-router-dom";
-import profilePlaceHolder from "../assets/Images/profilePlaceHolder.png";
-import companyPlaceHolder from '../assets/Images/companyPlaceHolder.png';
-import editIcon from "../assets/Images/editImage.png";
-import resumeIcon from "../assets/Images/resume.png";
 import { useNavigate } from "react-router-dom";
  
 
@@ -69,19 +65,19 @@ const UserProfile = () => {
         <h1 className="text-2xl md:text-3xl font-semibold pb-3 mb-5">User Profile</h1>
         <div className="flex flex-row justify-center sm:justify-normal">
           <img
-            src={profile.profileImgURL || profilePlaceHolder}
+            src={profile.profileImgURL || "https://res.cloudinary.com/db1xxbbat/image/upload/v1736079370/frontend/umzlgcigwtajqrqhrtct.png"}
             alt="Profile Picture"
             className="w-[100px] h-[100px] md:w-[150px] md:h-[150px] rounded-full shadow-lg object-cover"
           />
           <Link to="/updateprofileimage">
-            <img src={editIcon} alt="Edit icon" className="w-4 h-4 cursor-pointer" />
+            <img src="https://res.cloudinary.com/db1xxbbat/image/upload/v1736079368/frontend/rtdsb7yy6yx4mpdnssfu.png" alt="Edit icon" className="w-4 h-4 cursor-pointer" />
           </Link>
         </div>
         <div className="mt-5 flex flex-col gap-3">
           <div className="flex gap-3 items-center">
             <p className="text-lg md:text-xl font-medium">Name: {profile.name}</p>
             <Link to="/updateuserprofile">
-              <img src={editIcon} alt="Edit icon" className="w-4 h-4 cursor-pointer" />
+              <img src="https://res.cloudinary.com/db1xxbbat/image/upload/v1736079368/frontend/rtdsb7yy6yx4mpdnssfu.png" alt="Edit icon" className="w-4 h-4 cursor-pointer" />
             </Link>
           </div>
           <p>Email: <span className="text-gray-600">{profile.email}</span></p>
@@ -95,10 +91,10 @@ const UserProfile = () => {
               className="text-blue-500 font-medium hover:underline flex items-center gap-2"
             >
               Resume
-              <img className="w-[16px] h-[16px] md:w-[18px] md:h-[18px]" src={resumeIcon} alt="Resume Icon" />
+              <img className="w-[16px] h-[16px] md:w-[18px] md:h-[18px]" src="https://res.cloudinary.com/db1xxbbat/image/upload/v1736079371/frontend/ivw2oggiei4fzzifq9bz.png" alt="Resume Icon" />
             </Link>
             <Link to="/updateresume">
-              <img src={editIcon} alt="Edit icon" className="w-4 h-4 cursor-pointer" />
+              <img src="https://res.cloudinary.com/db1xxbbat/image/upload/v1736079368/frontend/rtdsb7yy6yx4mpdnssfu.png" alt="Edit icon" className="w-4 h-4 cursor-pointer" />
             </Link>
           </div>
           <button onClick={handleLogout} className="md:hidden">
@@ -113,12 +109,12 @@ const UserProfile = () => {
         <h2 className="text-xl md:text-2xl font-semibold pb-3 mb-5">For Company/Organizations</h2>
         <div className="flex flex-row justify-center sm:justify-normal">
           <img
-            src={profile.companyLogoURL || companyPlaceHolder}
+            src={profile.companyLogoURL || "https://res.cloudinary.com/db1xxbbat/image/upload/v1736079369/frontend/i0qh0dcvftwjvbdmw4ou.png"}
             alt="Company Logo"
             className="w-[80px] h-[80px] md:w-[120px] md:h-[120px] rounded-full shadow-lg object-cover"
           />
           <Link to="/updatecompanylogo">
-            <img src={editIcon} alt="Edit icon" className="w-4 h-4" />
+            <img src="https://res.cloudinary.com/db1xxbbat/image/upload/v1736079368/frontend/rtdsb7yy6yx4mpdnssfu.png" alt="Edit icon" className="w-4 h-4" />
           </Link>
         </div>
 

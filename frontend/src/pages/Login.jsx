@@ -2,7 +2,6 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom"
 import { ToastContainer } from "react-toastify";
 import { handleError, handleSuccess } from "../Utils";
-import loginFormImg from '../assets/Images/LoginForm.jpg'
  
 
 const Login = () => {
@@ -121,7 +120,7 @@ const Login = () => {
 
     <div className="w-full sm:w-1/2 mt-5 sm:mt-0">
       <img
-        src={loginFormImg}
+        src="https://res.cloudinary.com/db1xxbbat/image/upload/v1736079379/frontend/bw0k9pjed2irxfm3kmh7.jpg"
         alt="team image"
         className="rounded-xl w-full h-auto"
       />
