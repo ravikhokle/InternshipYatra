@@ -13,11 +13,7 @@ const PORT = process.env.PORT || 8000;
 DBConnect();
 
 app.use(cors({
-<<<<<<< HEAD
     origin: 'https://internshipyatra.ravikhokle.site',
-=======
-    origin: 'http://localhost:5000',
->>>>>>> 54880e0 (updated front)
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     allowedHeaders: ['Authorization', 'Content-Type'],
 }));
