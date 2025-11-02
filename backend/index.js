@@ -28,11 +28,6 @@ app.use('/profile', ProfileRouter);
 app.use('/auth', AuthRouter);
 app.use('/posts', PostRouter);
 
-app.use(express.static(path.join(_dirname, "/frontend/dist")));
-app.get('*', (req,res) => {
-    res.sendFile(path.resolve(_dirname, "frontend", "dist", "index.html"));
-})
-
 app.listen(PORT, () => {
     console.log(`Server is running on PORT: ${PORT}`);
 });
