@@ -19,6 +19,7 @@ import ViewDetails from './pages/ViewDetails';
 import AppliedUsers from './pages/AppliedUsers';
 import UpdatePost from './pages/UpdatePost';
 import UpdateUserProfile from './pages/UpdateUserProfile';
+import NewCom from './pages/NewCom'
 
 function App() {
 
@@ -34,6 +35,7 @@ function App() {
         <Route path='*' element={<NotFound/>}/>
         <Route path="/publicprofile/:id" element={<PublicProfile />} />
         <Route path='/internship/:id' element={<ViewDetails/>}/>
+        <Route path='/newcom' element={<NewCom />} />
 
         <Route element={<ProtectedRoutes/>}>
           <Route path='/profile' element={<UserProfile/>}/>
