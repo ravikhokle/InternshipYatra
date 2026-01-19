@@ -13,7 +13,7 @@ const PORT = process.env.PORT || 8000;
 DBConnect();
 
 app.use(cors({
-    origin: 'https://internshipyatra.ravikhokle.site',
+    origin: 'https://internshipyatra.vercel.app/',
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     allowedHeaders: ['Authorization', 'Content-Type'],
 }));
