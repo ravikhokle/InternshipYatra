@@ -1,0 +1,87 @@
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { handleError, handleSuccess } from "../Utils";
+import { useAuth } from "../context/AuthContext";
+import axiosInstance from "../api/axiosInstance";
+
+const UpdateProfileImg = () => {
+  const [user, updateUser] = useState({
+    profileImage: null,
+    previewProfileImage: null,
+  });
+
+  const navigate = useNavigate();
+  const { updateProfileImage } = useAuth();
+
+  const handleprofileImg = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const previewURL = URL.createObjectURL(file);
+      updateUser((prev) => ({
+        ...prev,
+        profileImage: file,
+        previewProfileImage: previewURL,
+      }));
+    }
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    const Data = new FormData();
+    Data.append("profileImage", user.profileImage);
+
+    const id = localStorage.getItem("userID");
+
+    try {
+      const response = await axiosInstance.put('/profile/updateProfileImg', Data, {
+        params: { _id: id },
+      });
+
+      const { message, success, userProfile } = response.data;
+
+      if (success) {
+        handleSuccess(message);
+        updateProfileImage(userProfile); // update context so Header re-renders instantly
+        setTimeout(() => {
+          navigate("/profile");
+        }, 1000);
+      }
+    } catch (error) {
+      handleError(error.response?.data || error.message);
+    }
+  };
+
+  return (
+    <div className="px-5 md:px-16 lg:px-32 py-10 flex flex-col gap-8 bg-gray-50 min-h-screen">
+  <form onSubmit={handleSubmit}>
+    <div className="flex flex-col items-center md:items-start">
+      <div className="flex flex-col items-center md:items-start">
+        <label htmlFor="profileImage" className="cursor-pointer">
+          <img
+            src={user.previewProfileImage || "https://res.cloudinary.com/db1xxbbat/image/upload/v1736079370/frontend/umzlgcigwtajqrqhrtct.png"}
+            alt="Profile Preview"
+            className="w-[80px] h-[80px] md:w-[100px] md:h-[100px] rounded-full my-5 shadow-[0_4px_10px_rgba(0,0,0,.3)] object-cover"
+          />
+        </label>
+        <input
+          style={{ display: "none" }}
+          type="file"
+          name="profileImage"
+          id="profileImage"
+          accept="image/*"
+          onChange={handleprofileImg}
+        />
+      </div>
+      <input
+        type="submit"
+        value="Upload"
+        className="w-[100px] px-5 py-2 bg-[#6300B3] rounded-md text-white mt-4 md:mt-0"
+      />
+    </div>
+  </form>
+</div>
+  );
+};
+
+export default UpdateProfileImg;

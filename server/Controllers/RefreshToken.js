@@ -1,0 +1,40 @@
+const JWT = require("jsonwebtoken");
+const User = require("../Models/userModel");
+
+const RefreshToken = async (req, res) => {
+    try {
+        const token = req.cookies?.refreshToken;
+
+        if (!token) {
+            return res.status(401).json({ message: "Refresh token missing", success: false });
+        }
+
+        // Verify the refresh token signature
+        let decoded;
+        try {
+            decoded = JWT.verify(token, process.env.REFRESH_TOKEN_SECRET);
+        } catch (err) {
+            return res.status(403).json({ message: "Invalid or expired refresh token", success: false });
+        }
+
+        // Check if the token matches what's stored in DB (allows server-side logout)
+        const user = await User.findById(decoded._id);
+        if (!user || user.refreshToken !== token) {
+            return res.status(403).json({ message: "Refresh token revoked", success: false });
+        }
+
+        // Issue a new short-lived access token
+        const accessToken = JWT.sign(
+            { email: user.email, _id: user._id },
+            process.env.JWT_SECRATE,
+            { expiresIn: '15m' }
+        );
+
+        res.status(200).json({ success: true, accessToken });
+
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+module.exports = RefreshToken;

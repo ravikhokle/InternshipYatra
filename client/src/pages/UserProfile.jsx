@@ -1,0 +1,123 @@
+import { useEffect, useState } from "react";
+import { handleError, handleSuccess } from "../Utils";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
+import axiosInstance from "../api/axiosInstance";
+
+const UserProfile = () => {
+  const [profile, setProfile] = useState({
+    name: "",
+    email: "",
+    profileImgURL: "",
+    resumeURL: "",
+    bio: "",
+    city: "",
+    number: "",
+    companyLogoURL: "",
+    companyName: "",
+    companyBio: "",
+  });
+
+  const navigate = useNavigate();
+  const { auth, logout } = useAuth();
+
+  const fetchProfileData = async () => {
+    try {
+      const response = await axiosInstance.get('/profile', {
+        params: { _id: auth.userID },
+      });
+      setProfile(response.data);
+    } catch (error) {
+      handleError(error.response?.data?.message || "An error occurred while fetching the profile data.");
+    }
+  };
+
+  useEffect(() => {
+    fetchProfileData();
+  }, []);
+
+  const handleLogout = async () => {
+    await logout();
+    handleSuccess("Logged out");
+    setTimeout(() => {
+      navigate("/login");
+    }, 2000);
+  };
+
+  return (
+    <div className="px-5 md:px-16 lg:px-32 py-10 flex flex-col gap-8 bg-gray-50 min-h-screen">
+      <div className="p-5 md:p-8">
+        <h1 className="text-2xl md:text-3xl font-semibold pb-3 mb-5">User Profile</h1>
+        <div className="flex flex-row justify-center sm:justify-normal">
+          <img
+            src={profile.profileImgURL || "https://res.cloudinary.com/db1xxbbat/image/upload/v1736079370/frontend/umzlgcigwtajqrqhrtct.png"}
+            alt="Profile Picture"
+            className="w-[100px] h-[100px] md:w-[150px] md:h-[150px] rounded-full shadow-lg object-cover"
+          />
+          <Link to="/updateprofileimage">
+            <img src="https://res.cloudinary.com/db1xxbbat/image/upload/v1736079368/frontend/rtdsb7yy6yx4mpdnssfu.png" alt="Edit icon" className="w-4 h-4 cursor-pointer" />
+          </Link>
+        </div>
+        <div className="mt-5 flex flex-col gap-3">
+          <div className="flex gap-3 items-center">
+            <p className="text-lg md:text-xl font-medium">Name: {profile.name}</p>
+            <Link to="/updateuserprofile">
+              <img src="https://res.cloudinary.com/db1xxbbat/image/upload/v1736079368/frontend/rtdsb7yy6yx4mpdnssfu.png" alt="Edit icon" className="w-4 h-4 cursor-pointer" />
+            </Link>
+          </div>
+          <p>Email: <span className="text-gray-600">{profile.email}</span></p>
+          <p>Bio: <span className="text-gray-600">{profile.bio}</span></p>
+          <p>City: <span className="text-gray-600">{profile.city}</span></p>
+          <p>Number: <span className="text-gray-600">{profile.number}</span></p>
+          <div className="flex items-center gap-3">
+            <Link
+              to={profile.resumeURL}
+              target="_blank"
+              className="text-blue-500 font-medium hover:underline flex items-center gap-2"
+            >
+              Resume
+              <img className="w-[16px] h-[16px] md:w-[18px] md:h-[18px]" src="https://res.cloudinary.com/db1xxbbat/image/upload/v1736079371/frontend/ivw2oggiei4fzzifq9bz.png" alt="Resume Icon" />
+            </Link>
+            <Link to="/updateresume">
+              <img src="https://res.cloudinary.com/db1xxbbat/image/upload/v1736079368/frontend/rtdsb7yy6yx4mpdnssfu.png" alt="Edit icon" className="w-4 h-4 cursor-pointer" />
+            </Link>
+          </div>
+          <button onClick={handleLogout} className="md:hidden">
+            Logout
+          </button>
+        </div>
+      </div>
+
+      <hr className="my-4 border-2 border-purple-600" />
+
+      <div className="p-5 md:p-8">
+        <h2 className="text-xl md:text-2xl font-semibold pb-3 mb-5">For Company/Organizations</h2>
+        <div className="flex flex-row justify-center sm:justify-normal">
+          <img
+            src={profile.companyLogoURL || "https://res.cloudinary.com/db1xxbbat/image/upload/v1736079369/frontend/i0qh0dcvftwjvbdmw4ou.png"}
+            alt="Company Logo"
+            className="w-[80px] h-[80px] md:w-[120px] md:h-[120px] rounded-full shadow-lg object-cover"
+          />
+          <Link to="/updatecompanylogo">
+            <img src="https://res.cloudinary.com/db1xxbbat/image/upload/v1736079368/frontend/rtdsb7yy6yx4mpdnssfu.png" alt="Edit icon" className="w-4 h-4" />
+          </Link>
+        </div>
+
+        <div className="mt-5 flex flex-col gap-3">
+          <p className="text-lg md:text-xl font-medium">Name: {profile.companyName}</p>
+          <p>
+            Bio: <span className="text-gray-600">{profile.companyBio}</span>
+          </p>
+          <Link to="/CreatePost" className="text-blue-500 font-medium hover:underline">
+            Post Internship
+          </Link>
+          <Link to="/userposts" className="text-blue-500 font-medium hover:underline">
+            View your posts
+          </Link>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default UserProfile;
