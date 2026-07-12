@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom"
+import { GoogleLogin } from "@react-oauth/google";
 import { handleError, handleSuccess } from "../Utils";
 import { useAuth } from "../context/AuthContext";
 import axiosInstance from "../api/axiosInstance";
@@ -9,14 +10,39 @@ const Login = () => {
     email: '',
     password: ''
   });
+  const [googleLoading, setGoogleLoading] = useState(false);
 
   const navigate = useNavigate();
   const { login } = useAuth();
+  const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setLoginInfo((prev) => ({ ...prev, [name]: value }));
   }
+
+  const handleGoogleSuccess = async (credentialResponse) => {
+    setGoogleLoading(true);
+    try {
+      const response = await axiosInstance.post("/auth/google", {
+        credential: credentialResponse.credential,
+      });
+
+      const { message, success, accessToken, name, userID, userProfile } = response.data;
+
+      if (success) {
+        handleSuccess(message);
+        login({ accessToken, name, userID, userProfile });
+        setTimeout(() => navigate("/profile"), 1000);
+      } else {
+        handleError(message);
+      }
+    } catch (err) {
+      handleError(err.response?.data?.message || "Google login failed. Try again.");
+    } finally {
+      setGoogleLoading(false);
+    }
+  };
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -53,6 +79,36 @@ const Login = () => {
 
   <div className="flex flex-col sm:flex-row w-full mt-5">
     <div className="w-full sm:w-1/2 pr-8 pb-8">
+      {googleClientId ? (
+        <div className="mb-5 flex justify-center">
+          {googleLoading ? (
+            <div className="w-full py-3 flex items-center justify-center gap-2 border-2 border-gray-200 rounded-lg text-gray-500 text-sm">
+              <svg className="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
+              </svg>
+              Signing in with Google...
+            </div>
+          ) : (
+            <GoogleLogin
+              onSuccess={handleGoogleSuccess}
+              onError={() => handleError("Google login was cancelled or failed")}
+              theme="outline"
+              size="large"
+              text="signin_with"
+              width={420}
+              shape="rectangular"
+            />
+          )}
+        </div>
+      ) : null}
+
+      <div className="flex items-center gap-3 mb-5">
+        <div className="flex-1 h-px bg-gray-200" />
+        <span className="text-xs text-gray-400 font-medium uppercase tracking-wide">or login with email</span>
+        <div className="flex-1 h-px bg-gray-200" />
+      </div>
+
       <form onSubmit={handleLogin}>
         <div>
           <label htmlFor="email">
@@ -73,7 +129,7 @@ const Login = () => {
             <h4 className="text-2xl">Password</h4>
           </label>
           <input
-            className="text-xl mb-5 w-full py-2 my-3 px-2 border-2"
+            className="text-xl mb-2 w-full py-2 my-3 px-2 border-2"
             onChange={handleChange}
             type="password"
             name="password"
@@ -81,6 +137,11 @@ const Login = () => {
             placeholder="Enter your password..."
             value={LoginInfo.password}
           />
+          <p className="text-right mb-5">
+            <Link to="/forgot-password" className="text-purple-600 text-base hover:underline">
+              Forgot Password?
+            </Link>
+          </p>
         </div>
 
         <button

@@ -2,6 +2,9 @@ import './App.css'
 import { Route, Routes } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 import Login from './pages/Login'
+import ForgotPassword from './pages/ForgotPassword'
+import VerifyOTP from './pages/VerifyOTP'
+import ResetPassword from './pages/ResetPassword'
 import Home from './pages/Home'
 import SignUp from './pages/SignUp'
 import About from './pages/About'
@@ -27,6 +30,9 @@ function App() {
       <Header />
       <Routes>
         <Route path='/login' element={<Login />} />
+        <Route path='/forgot-password' element={<ForgotPassword />} />
+        <Route path='/verify-otp' element={<VerifyOTP />} />
+        <Route path='/reset-password' element={<ResetPassword />} />
         <Route path='/signup' element={<SignUp />} />
         <Route path='/about' element={<About />} />
         <Route path='/' element={<Home />} />

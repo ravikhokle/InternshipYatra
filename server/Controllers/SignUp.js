@@ -1,12 +1,14 @@
-const { json } = require("body-parser");
 const User = require("../Models/userModel");
 const bcrypt = require("bcrypt");
+
+const DEFAULT_PROFILE =
+    "https://res.cloudinary.com/db1xxbbat/image/upload/v1736079370/frontend/umzlgcigwtajqrqhrtct.png";
 
 const SignUp = async (req, res) => {
     try {
         const { name, email, password } = req.body;
 
-        const profileImgURL = req.file.path;
+        const profileImgURL = req.file?.path || DEFAULT_PROFILE;
 
         const userData = await User.findOne({ email });
         if (userData) {

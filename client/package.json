@@ -13,6 +13,7 @@
     "node": "22.x"
   },
   "dependencies": {
+    "@react-oauth/google": "^0.13.5",
     "axios": "^1.7.9",
     "backend": "file:..",
     "date-fns": "^4.1.0",

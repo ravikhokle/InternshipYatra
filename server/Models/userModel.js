@@ -1,4 +1,3 @@
-const { required } = require('joi');
 const mongoose = require('mongoose');
 
 const userSchema = new mongoose.Schema({
@@ -14,6 +13,17 @@ const userSchema = new mongoose.Schema({
     password: {
         type: String,
         required: true,
+    },
+    googleId: {
+        type: String,
+        default: null,
+        sparse: true,
+        unique: true,
+    },
+    authProvider: {
+        type: String,
+        enum: ['local', 'google'],
+        default: 'local',
     },
     profileImgURL: {
         type: String,
@@ -41,6 +51,18 @@ const userSchema = new mongoose.Schema({
         type: String,
     },
     refreshToken: {
+        type: String,
+        default: null,
+    },
+    otp: {
+        type: String,
+        default: null,
+    },
+    otpExpiry: {
+        type: Date,
+        default: null,
+    },
+    resetToken: {
         type: String,
         default: null,
     },
