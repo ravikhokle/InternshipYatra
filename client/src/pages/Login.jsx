@@ -1,16 +1,22 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom"
-import { GoogleLogin } from "@react-oauth/google";
+import { Link, useNavigate } from "react-router-dom";
 import { handleError, handleSuccess } from "../Utils";
 import { useAuth } from "../context/AuthContext";
 import axiosInstance from "../api/axiosInstance";
+import GoogleAuthButton from "../components/GoogleAuthButton";
+import {
+  AuthPageShell,
+  AuthCard,
+  AuthDivider,
+  authInputClass,
+  authButtonClass,
+} from "../components/AuthLayout";
 
 const Login = () => {
-  const [LoginInfo, setLoginInfo] = useState({
-    email: '',
-    password: ''
-  });
+  const [loginInfo, setLoginInfo] = useState({ email: "", password: "" });
+  const [showPassword, setShowPassword] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
   const { login } = useAuth();
@@ -19,7 +25,7 @@ const Login = () => {
   const handleChange = (e) => {
     const { name, value } = e.target;
     setLoginInfo((prev) => ({ ...prev, [name]: value }));
-  }
+  };
 
   const handleGoogleSuccess = async (credentialResponse) => {
     setGoogleLoading(true);
@@ -46,132 +52,130 @@ const Login = () => {
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    const { email, password } = LoginInfo;
+    const { email, password } = loginInfo;
     if (!email || !password) {
-      return handleError('email and password not valid');
+      return handleError("Email and password are required");
     }
 
+    setLoading(true);
     try {
-      const response = await axiosInstance.post('/auth/login', LoginInfo);
+      const response = await axiosInstance.post("/auth/login", loginInfo);
       const { message, success, accessToken, name, userID, userProfile, error } = response.data;
 
       if (success) {
         handleSuccess(message);
         login({ accessToken, name, userID, userProfile });
-        setTimeout(() => {
-          navigate("/profile");
-        }, 1000);
+        setTimeout(() => navigate("/profile"), 1000);
       } else if (error) {
-        const details = error?.details[0].message;
-        handleError(details);
-      } else if (!success) {
+        handleError(error?.details?.[0]?.message || "Invalid login details");
+      } else {
         handleError(message);
       }
     } catch (err) {
       handleError(err.response?.data?.message || err.message);
+    } finally {
+      setLoading(false);
     }
-  }
+  };
 
   return (
-    <div className="px-8 sm:px-16 lg:px-32 pb-16">
-  <h2 className="text-black pt-8 text-3xl sm:text-4xl font-bold">Welcome Back!</h2>
-  <h3 className="pb-8 pt-1 text-lg sm:text-xl">Login to your Account</h3>
-
-  <div className="flex flex-col sm:flex-row w-full mt-5">
-    <div className="w-full sm:w-1/2 pr-8 pb-8">
-      {googleClientId ? (
-        <div className="mb-5 flex justify-center">
-          {googleLoading ? (
-            <div className="w-full py-3 flex items-center justify-center gap-2 border-2 border-gray-200 rounded-lg text-gray-500 text-sm">
-              <svg className="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
-                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
-                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
-              </svg>
-              Signing in with Google...
-            </div>
-          ) : (
-            <GoogleLogin
-              onSuccess={handleGoogleSuccess}
-              onError={() => handleError("Google login was cancelled or failed")}
-              theme="outline"
-              size="large"
-              text="signin_with"
-              width={420}
-              shape="rectangular"
-            />
-          )}
+    <AuthPageShell
+      heroTitle="Welcome back!"
+      heroDescription="Log in to apply for internships, manage your profile, and connect with opportunities."
+    >
+      <AuthCard>
+        <div className="flex justify-center mb-4">
+          <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-purple-100 flex items-center justify-center">
+            <svg className="w-5 h-5 sm:w-6 sm:h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+            </svg>
+          </div>
         </div>
-      ) : null}
 
-      <div className="flex items-center gap-3 mb-5">
-        <div className="flex-1 h-px bg-gray-200" />
-        <span className="text-xs text-gray-400 font-medium uppercase tracking-wide">or login with email</span>
-        <div className="flex-1 h-px bg-gray-200" />
-      </div>
+        <h1 className="text-xl sm:text-2xl font-bold text-gray-800 text-center mb-1">Login</h1>
+        <p className="text-gray-500 text-center text-xs sm:text-sm mb-5">
+          Welcome back — sign in to continue
+        </p>
 
-      <form onSubmit={handleLogin}>
-        <div>
-          <label htmlFor="email">
-            <h4 className="text-2xl">Email ID</h4>
+        {googleClientId && (
+          <GoogleAuthButton
+            text="signin_with"
+            label="Sign in with Google"
+            onSuccess={handleGoogleSuccess}
+            onError={() => handleError("Google login was cancelled or failed")}
+            loading={googleLoading}
+            loadingText="Signing in with Google..."
+          />
+        )}
+
+        {googleClientId && <AuthDivider text="or login with email" />}
+
+        <form onSubmit={handleLogin}>
+          <label htmlFor="email" className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">
+            Email Address
           </label>
           <input
-            className="text-xl mb-5 w-full py-2 my-3 px-2 border-2"
-            onChange={handleChange}
-            type="email"
-            name="email"
             id="email"
-            placeholder="Enter your email id"
-            value={LoginInfo.email}
-          />
-        </div>
-        <div>
-          <label htmlFor="password">
-            <h4 className="text-2xl">Password</h4>
-          </label>
-          <input
-            className="text-xl mb-2 w-full py-2 my-3 px-2 border-2"
+            name="email"
+            type="email"
+            value={loginInfo.email}
             onChange={handleChange}
-            type="password"
-            name="password"
-            id="password"
-            placeholder="Enter your password..."
-            value={LoginInfo.password}
+            placeholder="you@example.com"
+            className={`${authInputClass} mb-4`}
           />
-          <p className="text-right mb-5">
-            <Link to="/forgot-password" className="text-purple-600 text-base hover:underline">
+
+          <label htmlFor="password" className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">
+            Password
+          </label>
+          <div className="relative mb-2">
+            <input
+              id="password"
+              name="password"
+              type={showPassword ? "text" : "password"}
+              value={loginInfo.password}
+              onChange={handleChange}
+              placeholder="Enter your password"
+              className={`${authInputClass} pr-10`}
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword((s) => !s)}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+              aria-label={showPassword ? "Hide password" : "Show password"}
+            >
+              <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                {showPassword ? (
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
+                ) : (
+                  <>
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                  </>
+                )}
+              </svg>
+            </button>
+          </div>
+
+          <p className="text-right mb-4 sm:mb-5">
+            <Link to="/forgot-password" className="text-purple-600 text-xs sm:text-sm hover:underline">
               Forgot Password?
             </Link>
           </p>
-        </div>
 
-        <button
-          type="submit"
-          className="text-[#FFFFFF] text-lg font-bold rounded border-2 bg-purple-600 border-purple-600 w-full py-3"
-        >
-          Login
-        </button>
-        <p className="text-xl text-center mt-3">
-          <span>
-            Don&apos;t have an account?
-            <Link to="/signup" className="text-blue-600">
-              {" "}
-              Register
-            </Link>
-          </span>
+          <button type="submit" disabled={loading} className={authButtonClass}>
+            {loading ? "Logging in..." : "Login"}
+          </button>
+        </form>
+
+        <p className="text-center text-xs sm:text-sm text-gray-500 mt-5">
+          Don&apos;t have an account?{" "}
+          <Link to="/signup" className="text-purple-600 font-medium hover:underline">
+            Register
+          </Link>
         </p>
-      </form>
-    </div>
+      </AuthCard>
+    </AuthPageShell>
+  );
+};
 
-    <div className="w-full sm:w-1/2 mt-5 sm:mt-0">
-      <img
-        src="https://res.cloudinary.com/db1xxbbat/image/upload/v1736079379/frontend/bw0k9pjed2irxfm3kmh7.jpg"
-        alt="team image"
-        className="rounded-xl w-full h-auto"
-      />
-    </div>
-  </div>
-</div>
-  )
-}
-
-export default Login
+export default Login;

@@ -1,193 +1,267 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { handleError, handleSuccess } from "../Utils";
 import axiosInstance from "../api/axiosInstance";
+import { authInputClass, authButtonClass } from "../components/AuthLayout";
+import { mergePrivacy, PRIVACY_FIELDS, DEFAULT_PRIVACY } from "../utils/privacy";
+
+const PrivacyToggle = ({ isPublic, onChange }) => (
+  <button
+    type="button"
+    onClick={onChange}
+    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium border transition-colors shrink-0 ${
+      isPublic
+        ? "bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100"
+        : "bg-gray-100 text-gray-600 border-gray-200 hover:bg-gray-200"
+    }`}
+  >
+    {isPublic ? (
+      <>
+        <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+        Public
+      </>
+    ) : (
+      <>
+        <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+        </svg>
+        Private
+      </>
+    )}
+  </button>
+);
+
+const Field = ({ label, id, children, hint, privacyKey, isPublic, onTogglePrivacy }) => (
+  <div className="mb-4 sm:mb-5">
+    <div className="flex items-center justify-between gap-2 mb-1">
+      <label htmlFor={id} className="block text-sm font-medium text-gray-700">
+        {label}
+      </label>
+      {privacyKey && (
+        <PrivacyToggle isPublic={isPublic} onChange={onTogglePrivacy} />
+      )}
+    </div>
+    {children}
+    {hint && <p className="text-xs text-gray-400 mt-1">{hint}</p>}
+  </div>
+);
 
 const UpdateUserProfile = () => {
-  const [user, updateUser] = useState({
+  const [user, setUser] = useState({
     name: "",
     email: "",
     bio: "",
     city: "",
     number: "",
+    headline: "",
+    skills: "",
+    education: "",
+    experience: "",
+    linkedinURL: "",
+    githubURL: "",
     companyName: "",
     companyBio: "",
   });
+  const [privacy, setPrivacy] = useState({ ...DEFAULT_PRIVACY });
+  const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
 
-  const fetchProfileData = async () => {
-    try {
-      const userID = localStorage.getItem("userID");
-      const response = await axiosInstance.get('/profile', {
-        params: { _id: userID },
-      });
-      updateUser(response.data);
-    } catch (error) {
-      handleError(error.response?.data?.message || "An error while fetching profile data");
-    }
-  };
-
   useEffect(() => {
+    const fetchProfileData = async () => {
+      try {
+        const userID = localStorage.getItem("userID");
+        const response = await axiosInstance.get("/profile", { params: { _id: userID } });
+        const data = response.data;
+        setUser({
+          name: data.name || "",
+          email: data.email || "",
+          bio: data.bio || "",
+          city: data.city || "",
+          number: data.number || "",
+          headline: data.headline || "",
+          skills: (data.skills || []).join(", "),
+          education: data.education || "",
+          experience: data.experience || "",
+          linkedinURL: data.linkedinURL || "",
+          githubURL: data.githubURL || "",
+          companyName: data.companyName || "",
+          companyBio: data.companyBio || "",
+        });
+        setPrivacy(mergePrivacy(data.privacySettings));
+      } catch (error) {
+        handleError(error.response?.data?.message || "Failed to load profile");
+      }
+    };
     fetchProfileData();
   }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    updateUser((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+    setUser((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const togglePrivacy = (key) => {
+    setPrivacy((prev) => ({ ...prev, [key]: !prev[key] }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!user.name || !user.email) {
+      return handleError("Name and email are required");
+    }
 
-    const Data = new FormData();
-    Data.append("name", user.name);
-    Data.append("email", user.email);
-    Data.append("bio", user.bio);
-    Data.append("city", user.city);
-    Data.append("number", user.number);
-    Data.append("companyName", user.companyName);
-    Data.append("companyBio", user.companyBio);
-
+    setLoading(true);
     const id = localStorage.getItem("userID");
 
     try {
-      const result = await axiosInstance.put('/profile/updateProfile', Data, {
-        params: { _id: id },
-        headers: {
-          "Content-Type": "application/json",
-          accept: "application/json",
+      const result = await axiosInstance.put(
+        "/profile/updateProfile",
+        {
+          name: user.name,
+          email: user.email,
+          bio: user.bio,
+          city: user.city,
+          number: user.number,
+          headline: user.headline,
+          skills: user.skills,
+          education: user.education,
+          experience: user.experience,
+          linkedinURL: user.linkedinURL,
+          githubURL: user.githubURL,
+          companyName: user.companyName,
+          companyBio: user.companyBio,
+          privacySettings: privacy,
         },
-      });
+        { params: { _id: id } }
+      );
 
-      const { message, success } = result.data;
-
-      if (success) {
-        handleSuccess(message);
-        setTimeout(() => {
-          navigate("/profile");
-        }, 1000);
+      if (result.data.success) {
+        handleSuccess(result.data.message);
+        setTimeout(() => navigate("/profile"), 1000);
       } else {
-        handleError(message);
+        handleError(result.data.message);
       }
     } catch (error) {
-      handleError(
-        "Name & Email is Required",
-        error.response?.data || error.message
-      );
+      handleError(error.response?.data?.message || "Update failed");
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div className="px-5 md:px-16 lg:px-32 flex flex-col items-center pb-10 bg-gray-100">
-      <div className="mt-5 text-center">
-        <h2 className="text-2xl md:text-3xl font-[600]">
-          Edit your profile details
-        </h2>
+    <div className="min-h-screen bg-[#f3f2ef] py-6 sm:py-10 px-4 sm:px-6">
+      <div className="max-w-2xl mx-auto">
+        <div className="mb-6">
+          <Link to="/profile" className="text-purple-600 text-sm font-medium hover:underline">
+            ← Back to Profile
+          </Link>
+          <h1 className="text-xl sm:text-2xl font-bold text-gray-900 mt-3">Edit Profile</h1>
+          <p className="text-gray-500 text-sm mt-1">
+            Build your profile and control what others see on your public page
+          </p>
+        </div>
+
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-5 sm:p-8">
+            <h2 className="text-base font-semibold text-gray-900 mb-4 pb-2 border-b border-gray-100">
+              Basic Info
+            </h2>
+
+            <Field label="Full Name *" id="name">
+              <input id="name" name="name" type="text" value={user.name} onChange={handleChange} className={authInputClass} required />
+            </Field>
+
+            <Field label="Email *" id="email" privacyKey="email" isPublic={privacy.email} onTogglePrivacy={() => togglePrivacy("email")}>
+              <input id="email" name="email" type="email" value={user.email} onChange={handleChange} className={authInputClass} required />
+            </Field>
+
+            <Field label="Headline" id="headline" privacyKey="headline" hint="e.g. B.Tech CSE Student | React Developer" isPublic={privacy.headline} onTogglePrivacy={() => togglePrivacy("headline")}>
+              <input id="headline" name="headline" type="text" value={user.headline} onChange={handleChange} placeholder="Your professional headline" className={authInputClass} />
+            </Field>
+
+            <Field label="About / Bio" id="bio" privacyKey="bio" isPublic={privacy.bio} onTogglePrivacy={() => togglePrivacy("bio")}>
+              <textarea id="bio" name="bio" value={user.bio} onChange={handleChange} rows={4} placeholder="Tell recruiters about yourself..." className={`${authInputClass} resize-y`} />
+            </Field>
+
+            <div className="grid sm:grid-cols-2 gap-4">
+              <Field label="City" id="city" privacyKey="city" isPublic={privacy.city} onTogglePrivacy={() => togglePrivacy("city")}>
+                <input id="city" name="city" type="text" value={user.city} onChange={handleChange} placeholder="Mumbai, India" className={authInputClass} />
+              </Field>
+              <Field label="Phone" id="number" privacyKey="number" isPublic={privacy.number} onTogglePrivacy={() => togglePrivacy("number")}>
+                <input id="number" name="number" type="text" value={user.number} onChange={handleChange} placeholder="+91 98765 43210" className={authInputClass} />
+              </Field>
+            </div>
+          </div>
+
+          <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-5 sm:p-8">
+            <h2 className="text-base font-semibold text-gray-900 mb-4 pb-2 border-b border-gray-100">
+              Skills & Background
+            </h2>
+
+            <Field label="Skills" id="skills" privacyKey="skills" hint="Comma-separated — React, Python, Figma" isPublic={privacy.skills} onTogglePrivacy={() => togglePrivacy("skills")}>
+              <input id="skills" name="skills" type="text" value={user.skills} onChange={handleChange} placeholder="React, JavaScript, UI Design" className={authInputClass} />
+            </Field>
+
+            <Field label="Education" id="education" privacyKey="education" isPublic={privacy.education} onTogglePrivacy={() => togglePrivacy("education")}>
+              <textarea id="education" name="education" value={user.education} onChange={handleChange} rows={3} className={`${authInputClass} resize-y`} />
+            </Field>
+
+            <Field label="Experience" id="experience" privacyKey="experience" isPublic={privacy.experience} onTogglePrivacy={() => togglePrivacy("experience")}>
+              <textarea id="experience" name="experience" value={user.experience} onChange={handleChange} rows={3} className={`${authInputClass} resize-y`} />
+            </Field>
+
+            <div className="grid sm:grid-cols-2 gap-4">
+              <Field label="LinkedIn URL" id="linkedinURL" privacyKey="linkedinURL" isPublic={privacy.linkedinURL} onTogglePrivacy={() => togglePrivacy("linkedinURL")}>
+                <input id="linkedinURL" name="linkedinURL" type="url" value={user.linkedinURL} onChange={handleChange} placeholder="https://linkedin.com/in/you" className={authInputClass} />
+              </Field>
+              <Field label="GitHub URL" id="githubURL" privacyKey="githubURL" isPublic={privacy.githubURL} onTogglePrivacy={() => togglePrivacy("githubURL")}>
+                <input id="githubURL" name="githubURL" type="url" value={user.githubURL} onChange={handleChange} placeholder="https://github.com/you" className={authInputClass} />
+              </Field>
+            </div>
+          </div>
+
+          <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-5 sm:p-8">
+            <h2 className="text-base font-semibold text-gray-900 mb-1">Company / Recruiter</h2>
+            <p className="text-xs text-gray-500 mb-4">Optional — for posting internships</p>
+
+            <Field label="Company Name" id="companyName" privacyKey="companyName" isPublic={privacy.companyName} onTogglePrivacy={() => togglePrivacy("companyName")}>
+              <input id="companyName" name="companyName" type="text" value={user.companyName} onChange={handleChange} className={authInputClass} />
+            </Field>
+
+            <Field label="Company Description" id="companyBio" privacyKey="companyBio" isPublic={privacy.companyBio} onTogglePrivacy={() => togglePrivacy("companyBio")}>
+              <textarea id="companyBio" name="companyBio" value={user.companyBio} onChange={handleChange} rows={3} className={`${authInputClass} resize-y`} />
+            </Field>
+          </div>
+
+          <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-5 sm:p-8">
+            <h2 className="text-base font-semibold text-gray-900 mb-1">Privacy Overview</h2>
+            <p className="text-xs text-gray-500 mb-4">
+              Toggle each field above, or review all settings here. Private fields are hidden on your public profile.
+            </p>
+            <div className="space-y-2">
+              {PRIVACY_FIELDS.map(({ key, label }) => (
+                <div
+                  key={key}
+                  className="flex items-center justify-between py-2 px-3 rounded-lg bg-gray-50"
+                >
+                  <span className="text-sm text-gray-700">{label}</span>
+                  <PrivacyToggle
+                    isPublic={privacy[key]}
+                    onChange={() => togglePrivacy(key)}
+                  />
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <button type="submit" disabled={loading} className={authButtonClass}>
+            {loading ? "Saving..." : "Save Profile & Privacy"}
+          </button>
+        </form>
       </div>
-      <form onSubmit={handleSubmit} className="w-full md:w-[75%] lg:w-[50%]">
-        <div className="flex flex-col">
-          <label className="py-3 font-bold" htmlFor="name">Name:</label>
-          <input
-            className="py-4 px-5 border-[#E7E7F1] bg-white border-2 outline-none"
-            placeholder="enter your name"
-            type="text"
-            name="name"
-            id="name"
-            onChange={handleChange}
-            value={user.name}
-          />
-        </div>
-
-        <div className="flex flex-col">
-          <label className="py-3 font-bold" htmlFor="email">Email:</label>
-          <input
-            className="py-4 px-5 border-[#E7E7F1] bg-white border-2 outline-none"
-            placeholder="enter your email"
-            type="email"
-            name="email"
-            id="email"
-            onChange={handleChange}
-            value={user.email}
-          />
-        </div>
-
-        <div className="flex flex-col">
-          <label className="py-3 font-bold" htmlFor="bio">Bio:</label>
-          <textarea
-            className="py-4 px-5 border-[#E7E7F1] bg-white border-2 outline-none"
-            placeholder="enter your bio"
-            name="bio"
-            id="bio"
-            onChange={handleChange}
-            value={user.bio}
-            rows="4"
-          ></textarea>
-        </div>
-
-        <div className="flex flex-col">
-          <label className="py-3 font-bold" htmlFor="city">City:</label>
-          <input
-            className="py-4 px-5 border-[#E7E7F1] bg-white border-2 outline-none"
-            placeholder="Delhi, India"
-            type="text"
-            name="city"
-            id="city"
-            onChange={handleChange}
-            value={user.city}
-          />
-        </div>
-
-        <div className="flex flex-col">
-          <label className="py-3 font-bold" htmlFor="number">Number:</label>
-          <input
-            className="py-4 px-5 border-[#E7E7F1] bg-white border-2 outline-none"
-            placeholder="+91 7218******"
-            type="text"
-            name="number"
-            id="number"
-            onChange={handleChange}
-            value={user.number}
-          />
-        </div>
-
-        <div className="flex flex-col">
-          <label className="py-3 font-bold" htmlFor="companyName">Company Name:</label>
-          <input
-            className="py-4 px-5 border-[#E7E7F1] bg-white border-2 outline-none"
-            placeholder="optional"
-            type="text"
-            name="companyName"
-            id="companyName"
-            onChange={handleChange}
-            value={user.companyName}
-          />
-        </div>
-
-        <div className="flex flex-col">
-          <label className="py-3 font-bold" htmlFor="companyBio">Company Bio:</label>
-          <textarea
-            className="py-4 px-5 border-[#E7E7F1] bg-white border-2 outline-none"
-            placeholder="company bio (optional)"
-            value={user.companyBio}
-            onChange={handleChange}
-            id="companyBio"
-            name="companyBio"
-            rows="4"
-          ></textarea>
-        </div>
-
-        <div className="mt-5 flex justify-center">
-          <input
-            type="submit"
-            value="Update"
-            className="text-[#FFFFFF] text-lg rounded border-2 bg-[#6300B3] border-[#6300B3] w-1/2 md:w-1/3 py-3"
-          />
-        </div>
-      </form>
     </div>
   );
 };

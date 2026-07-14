@@ -9,14 +9,20 @@ const uploadCompanyLogo = require('../lib/companyLogo')
 const uploadresume = require('../lib/resume');
 const upload = require('../lib/multer'); // for profileImg
 const userPosts = require('../Controllers/userPosts');
+const userApplications = require('../Controllers/userApplications');
 const publicProfile = require('../Controllers/publicProfile');
+const deleteAccount = require('../Controllers/DeleteAccount');
+const viewResume = require('../Controllers/viewResume');
 
 router.get('/', ensureAuthenticated, userProfile);
+router.get('/resume/:userId', ensureAuthenticated, viewResume);
 router.put('/updateProfile', updateProfile); // for all text fields.
 router.put('/updateProfileImg', upload.single("profileImage"), updateProfileImg);
 router.put('/updateResume', uploadresume.single("resume"), updateResume);
 router.put('/updateCompanyLogo', uploadCompanyLogo.single("companyLogo"), updateCompanyLogo);
 router.get('/userPosts', userPosts);
+router.get('/userApplications', ensureAuthenticated, userApplications);
 router.get('/publicProfile', publicProfile);
+router.delete('/delete-account', ensureAuthenticated, deleteAccount);
 
 module.exports = router;

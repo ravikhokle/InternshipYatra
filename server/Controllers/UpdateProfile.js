@@ -4,7 +4,7 @@ const User = require('../Models/userModel');
 const updateProfile = async (req, res) => {
     try {
         const { _id } = req.query; 
-        const { name, email, bio, city, number, companyName, companyBio } = req.body;
+        const { name, email, bio, city, number, companyName, companyBio, headline, education, experience, linkedinURL, githubURL, skills, privacySettings } = req.body;
 
         if (!_id) {
             return res.status(400).json({ message: 'User ID is required.' });
@@ -28,9 +28,30 @@ const updateProfile = async (req, res) => {
             }
         }
 
+        const skillsArray = skills
+            ? (Array.isArray(skills) ? skills : skills.split(',').map((s) => s.trim()).filter(Boolean))
+            : undefined;
+
         const updatedUser = await User.findByIdAndUpdate(
             _id,
-            { $set: { ...(name && { name }), ...(email && { email }), ...(bio && { bio }), ...(city && { city }), ...(number && { number }), ...(companyName && { companyName }), ...(companyBio && { companyBio }) } },
+            {
+                $set: {
+                    ...(name && { name }),
+                    ...(email && { email }),
+                    ...(bio !== undefined && { bio }),
+                    ...(city !== undefined && { city }),
+                    ...(number !== undefined && { number }),
+                    ...(companyName !== undefined && { companyName }),
+                    ...(companyBio !== undefined && { companyBio }),
+                    ...(headline !== undefined && { headline }),
+                    ...(education !== undefined && { education }),
+                    ...(experience !== undefined && { experience }),
+                    ...(linkedinURL !== undefined && { linkedinURL }),
+                    ...(githubURL !== undefined && { githubURL }),
+                    ...(skillsArray !== undefined && { skills: skillsArray }),
+                    ...(privacySettings !== undefined && { privacySettings }),
+                },
+            },
             { new: true, runValidators: true }
         );
 

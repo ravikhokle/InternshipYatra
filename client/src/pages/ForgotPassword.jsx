@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { handleError, handleSuccess } from "../Utils";
 import axiosInstance from "../api/axiosInstance";
+import { CenteredAuthPage, AuthCard, authInputClass, authButtonClass } from "../components/AuthLayout";
 
 const ForgotPassword = () => {
   const [email, setEmail] = useState("");
@@ -31,25 +32,25 @@ const ForgotPassword = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#f5f0ff] via-white to-[#ede9fe] flex items-center justify-center px-4">
-      <div className="w-full max-w-md bg-white rounded-2xl shadow-[0_8px_30px_rgba(124,58,237,0.12)] p-8 sm:p-10">
-
-        {/* Icon */}
-        <div className="flex justify-center mb-6">
-          <div className="w-16 h-16 rounded-full bg-purple-100 flex items-center justify-center">
-            <svg className="w-8 h-8 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <CenteredAuthPage>
+      <AuthCard>
+        <div className="flex justify-center mb-5 sm:mb-6">
+          <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-purple-100 flex items-center justify-center">
+            <svg className="w-7 h-7 sm:w-8 sm:h-8 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
             </svg>
           </div>
         </div>
 
-        <h1 className="text-2xl sm:text-3xl font-bold text-gray-800 text-center mb-1">Forgot Password?</h1>
-        <p className="text-gray-500 text-center text-sm mb-8">
-          Enter your registered email and we'll send you a 6-digit OTP.
+        <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-800 text-center mb-1">
+          Forgot Password?
+        </h1>
+        <p className="text-gray-500 text-center text-xs sm:text-sm mb-6 sm:mb-8 px-2">
+          Enter your registered email and we&apos;ll send you a 6-digit OTP.
         </p>
 
         <form onSubmit={handleSubmit}>
-          <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
+          <label htmlFor="email" className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">
             Email Address
           </label>
           <input
@@ -58,15 +59,11 @@ const ForgotPassword = () => {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             placeholder="you@example.com"
-            className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg outline-none focus:border-purple-500 transition-colors text-sm mb-5"
+            className={`${authInputClass} mb-4 sm:mb-5`}
             autoFocus
           />
 
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full py-3 bg-purple-600 hover:bg-purple-700 text-white font-semibold rounded-lg transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
-          >
+          <button type="submit" disabled={loading} className={authButtonClass}>
             {loading ? (
               <span className="flex items-center justify-center gap-2">
                 <svg className="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
@@ -79,14 +76,14 @@ const ForgotPassword = () => {
           </button>
         </form>
 
-        <p className="text-center text-sm text-gray-500 mt-6">
+        <p className="text-center text-xs sm:text-sm text-gray-500 mt-5 sm:mt-6">
           Remember your password?{" "}
           <Link to="/login" className="text-purple-600 font-medium hover:underline">
             Back to Login
           </Link>
         </p>
-      </div>
-    </div>
+      </AuthCard>
+    </CenteredAuthPage>
   );
 };
 

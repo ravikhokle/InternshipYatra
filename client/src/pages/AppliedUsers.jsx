@@ -47,10 +47,8 @@ const AppliedUsers = () => {
             >
               <td className="px-4 md:px-6 py-4">{index + 1}</td>
               <td className="px-4 md:px-6 py-4">{user.name}</td>
-              <td className="px-4 md:px-6 py-4 text-blue-600 hover:underline">
-                <Link to={user.resumeURL} target="_blank">
-                  Check
-                </Link>
+              <td className="px-4 md:px-6 py-4 text-purple-600 hover:underline">
+                <Link to={`/view-resume/${user.userId}`}>View</Link>
               </td>
               <td className="px-4 md:px-6 py-4 text-blue-600 hover:underline">
                 <Link to={`/publicprofile/${user.userId}`}>View Profile</Link>

@@ -50,6 +50,44 @@ const userSchema = new mongoose.Schema({
     number: {
         type: String,
     },
+    headline: {
+        type: String,
+        default: '',
+    },
+    skills: {
+        type: [String],
+        default: [],
+    },
+    education: {
+        type: String,
+        default: '',
+    },
+    experience: {
+        type: String,
+        default: '',
+    },
+    linkedinURL: {
+        type: String,
+        default: '',
+    },
+    githubURL: {
+        type: String,
+        default: '',
+    },
+    privacySettings: {
+        bio: { type: Boolean, default: true },
+        city: { type: Boolean, default: true },
+        number: { type: Boolean, default: false },
+        email: { type: Boolean, default: false },
+        headline: { type: Boolean, default: true },
+        skills: { type: Boolean, default: true },
+        education: { type: Boolean, default: true },
+        experience: { type: Boolean, default: true },
+        linkedinURL: { type: Boolean, default: true },
+        githubURL: { type: Boolean, default: true },
+        companyName: { type: Boolean, default: true },
+        companyBio: { type: Boolean, default: true },
+    },
     refreshToken: {
         type: String,
         default: null,

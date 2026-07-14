@@ -9,7 +9,7 @@ import {
   OtpInputClass,
 } from "../components/AuthLayout";
 
-const VerifyOTP = () => {
+const VerifySignupOTP = () => {
   const [digits, setDigits] = useState(["", "", "", "", "", ""]);
   const [loading, setLoading] = useState(false);
   const [resendLoading, setResendLoading] = useState(false);
@@ -18,9 +18,10 @@ const VerifyOTP = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const email = location.state?.email || "";
+  const name = location.state?.name || "";
 
   useEffect(() => {
-    if (!email) navigate("/forgot-password");
+    if (!email) navigate("/signup");
   }, [email, navigate]);
 
   useEffect(() => {
@@ -63,12 +64,10 @@ const VerifyOTP = () => {
 
     setLoading(true);
     try {
-      const response = await axiosInstance.post("/auth/verify-otp", { email, otp });
+      const response = await axiosInstance.post("/auth/verify-signup-otp", { email, otp });
       if (response.data.success) {
-        handleSuccess("OTP verified!");
-        setTimeout(() => {
-          navigate("/reset-password", { state: { resetToken: response.data.resetToken } });
-        }, 800);
+        handleSuccess("Account created successfully!");
+        setTimeout(() => navigate("/login"), 1200);
       } else {
         handleError(response.data.message);
       }
@@ -82,13 +81,17 @@ const VerifyOTP = () => {
   const handleResend = async () => {
     setResendLoading(true);
     try {
-      await axiosInstance.post("/auth/forgot-password", { email });
-      handleSuccess("New OTP sent to your email!");
-      setCountdown(60);
-      setDigits(["", "", "", "", "", ""]);
-      inputRefs.current[0]?.focus();
+      const response = await axiosInstance.post("/auth/resend-signup-otp", { email });
+      if (response.data.success) {
+        handleSuccess("New OTP sent to your email!");
+        setCountdown(60);
+        setDigits(["", "", "", "", "", ""]);
+        inputRefs.current[0]?.focus();
+      } else {
+        handleError(response.data.message);
+      }
     } catch (err) {
-      handleError("Failed to resend OTP. Try again.");
+      handleError(err.response?.data?.message || "Failed to resend OTP. Try again.");
     } finally {
       setResendLoading(false);
     }
@@ -106,10 +109,10 @@ const VerifyOTP = () => {
         </div>
 
         <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-800 text-center mb-1">
-          Check your email
+          Verify your email
         </h1>
-        <p className="text-gray-500 text-center text-xs sm:text-sm mb-2 px-2">
-          We sent a 6-digit OTP to
+        <p className="text-gray-500 text-center text-xs sm:text-sm mb-1 px-2">
+          {name ? `Almost there, ${name}!` : "Almost there!"} Enter the 6-digit code sent to
         </p>
         <p className="text-purple-600 font-semibold text-center text-xs sm:text-sm mb-6 sm:mb-8 truncate px-2">
           {email}
@@ -145,7 +148,7 @@ const VerifyOTP = () => {
                 </svg>
                 Verifying...
               </span>
-            ) : "Verify OTP"}
+            ) : "Verify & Create Account"}
           </button>
         </form>
 
@@ -165,8 +168,8 @@ const VerifyOTP = () => {
         </div>
 
         <p className="text-center text-xs sm:text-sm text-gray-500 mt-4">
-          <Link to="/forgot-password" className="text-purple-600 font-medium hover:underline">
-            ← Use a different email
+          <Link to="/signup" className="text-purple-600 font-medium hover:underline">
+            ← Back to signup
           </Link>
         </p>
       </AuthCard>
@@ -174,4 +177,4 @@ const VerifyOTP = () => {
   );
 };
 
-export default VerifyOTP;
+export default VerifySignupOTP;

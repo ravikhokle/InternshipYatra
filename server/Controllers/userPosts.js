@@ -25,6 +25,11 @@ const userPosts = async (req, res) => {
         const postsData = userPosts.map(post => ({
             id: post._id,
             title: post.title,
+            companyName: post.companyName,
+            location: post.location,
+            stipend: post.stipend,
+            duration: post.duration,
+            createdAt: post.createdAt,
         }));
 
         res.status(200).json(postsData);

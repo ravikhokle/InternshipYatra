@@ -4,6 +4,7 @@ import { ToastContainer } from 'react-toastify';
 import Login from './pages/Login'
 import ForgotPassword from './pages/ForgotPassword'
 import VerifyOTP from './pages/VerifyOTP'
+import VerifySignupOTP from './pages/VerifySignupOTP'
 import ResetPassword from './pages/ResetPassword'
 import Home from './pages/Home'
 import SignUp from './pages/SignUp'
@@ -16,6 +17,7 @@ import Footer from './components/Footer';
 import UserProfile from './pages/UserProfile';
 import UpdateResume from './pages/UpdateResume';
 import UpdateProfileImg from './pages/UpdateProfileImg'
+import ViewResume from './pages/ViewResume';
 import UpdateCompanyLogo from './pages/UpdateCompanyLogo'
 import PublicProfile from './pages/PublicProfile';
 import DisplayUserPosts from './pages/DisplayUserPosts';
@@ -34,6 +36,7 @@ function App() {
         <Route path='/verify-otp' element={<VerifyOTP />} />
         <Route path='/reset-password' element={<ResetPassword />} />
         <Route path='/signup' element={<SignUp />} />
+        <Route path='/verify-signup-otp' element={<VerifySignupOTP />} />
         <Route path='/about' element={<About />} />
         <Route path='/' element={<Home />} />
         <Route path='*' element={<NotFound />} />
@@ -45,6 +48,8 @@ function App() {
           <Route path='/updateuserprofile' element={<UpdateUserProfile />} />
           <Route path='/updateresume' element={<UpdateResume />} />
           <Route path='/updateprofileimage' element={<UpdateProfileImg />} />
+          <Route path='/view-resume' element={<ViewResume />} />
+          <Route path='/view-resume/:userId' element={<ViewResume />} />
           <Route path='/updatecompanylogo' element={<UpdateCompanyLogo />} />
           <Route path='/createpost' element={<CreatePost />} />
           <Route path="/updatepost/:id" element={<UpdatePost />} />

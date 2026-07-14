@@ -46,8 +46,34 @@ const sendOTPEmail = async (toEmail, otp) => {
         `,
     };
 
+    await transporter.sendMail(mailOptions);
+};
+
+const sendSignupOTPEmail = async (toEmail, otp, name) => {
+    const mailOptions = {
+        from: `"InternshipYatra" <${process.env.EMAIL_USER}>`,
+        to: toEmail,
+        subject: 'Verify your email — InternshipYatra Signup',
+        html: `
+        <div style="font-family: Arial, sans-serif; max-width: 480px; margin: auto; padding: 32px; border: 1px solid #e5e7eb; border-radius: 12px;">
+            <h2 style="color: #7c3aed; margin-bottom: 8px;">InternshipYatra</h2>
+            <p style="color: #374151; font-size: 16px;">Hi ${name}, welcome! Use the OTP below to verify your email and complete your registration.</p>
+
+            <div style="background: #f3f4f6; border-radius: 8px; padding: 24px; text-align: center; margin: 24px 0;">
+                <p style="margin: 0; color: #6b7280; font-size: 14px;">Your Verification Code</p>
+                <h1 style="letter-spacing: 16px; color: #111827; font-size: 40px; margin: 12px 0;">${otp}</h1>
+                <p style="margin: 0; color: #ef4444; font-size: 13px;">⏱ Expires in 10 minutes</p>
+            </div>
+
+            <p style="color: #6b7280; font-size: 14px;">If you did not create an account, you can safely ignore this email.</p>
+            <hr style="border: none; border-top: 1px solid #e5e7eb; margin: 24px 0;" />
+            <p style="color: #9ca3af; font-size: 12px; text-align: center;">© ${new Date().getFullYear()} InternshipYatra · Made with 🖤 by Ravi Khokle</p>
+        </div>
+        `,
+    };
+
     const transporter = getTransporter();
     await transporter.sendMail(mailOptions);
 };
 
-module.exports = { sendOTPEmail };
+module.exports = { sendOTPEmail, sendSignupOTPEmail };
