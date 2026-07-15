@@ -4,6 +4,7 @@ require('dotenv').config();
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
 const path = require('path');
+const fs = require('fs');
 const DBConnect = require('./Models/db');
 const AuthRouter = require('./Routes/AuthRouter');
 const PostRouter = require('./Routes/PostRouter');
@@ -13,25 +14,66 @@ const PORT = process.env.PORT || 8000;
 
 DBConnect();
 
+const allowedOrigins = [
+    'http://localhost:5173',
+    'http://localhost:4173',
+    process.env.CLIENT_URL,
+    process.env.FRONTEND_URL,
+    'https://internshipyatra.ravikhokle.site',
+    'https://www.internshipyatra.ravikhokle.site',
+].filter(Boolean);
+
 app.use(cors({
-    origin: 'http://localhost:5173',
+    origin(origin, callback) {
+        if (!origin || allowedOrigins.includes(origin)) {
+            callback(null, true);
+        } else {
+            callback(null, false);
+        }
+    },
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     allowedHeaders: ['Authorization', 'Content-Type'],
-    credentials: true, // allow cookies to be sent cross-origin
+    credentials: true,
 }));
 
 app.use(cookieParser());
-
-const _dirname = path.resolve();
-
 app.use(express.json());
 
-app.use('/public', express.static(path.join(__dirname, 'public')));
+const publicDir = path.join(__dirname, 'public');
+if (fs.existsSync(publicDir)) {
+    app.use('/public', express.static(publicDir));
+}
 
 app.use('/profile', ProfileRouter);
 app.use('/auth', AuthRouter);
 app.use('/posts', PostRouter);
 
+// Serve React build in production (single-server deploy)
+const frontendDist = path.join(__dirname, '../frontend/dist');
+const serveClient = process.env.SERVE_CLIENT === 'true' || process.env.NODE_ENV === 'production';
+
+if (serveClient && fs.existsSync(frontendDist)) {
+    app.use(express.static(frontendDist));
+
+    // SPA fallback — only for non-API frontend routes
+    app.get('*', (req, res, next) => {
+        if (
+            req.path.startsWith('/auth') ||
+            req.path.startsWith('/posts') ||
+            req.path.startsWith('/profile') ||
+            req.path.startsWith('/public')
+        ) {
+            return next();
+        }
+        res.sendFile(path.join(frontendDist, 'index.html'), (err) => {
+            if (err) next(err);
+        });
+    });
+}
+
 app.listen(PORT, () => {
     console.log(`Server is running on PORT: ${PORT}`);
+    if (serveClient && fs.existsSync(frontendDist)) {
+        console.log('Serving frontend from:', frontendDist);
+    }
 });
