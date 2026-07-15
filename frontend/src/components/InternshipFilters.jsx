@@ -83,7 +83,6 @@ const InternshipFilters = ({ filters, updateFilter, clearFilters, activeCount })
           </button>
         )}
       </div>
-      <p className="text-xs text-gray-500 mt-1">Refine results like LinkedIn & Internshala</p>
     </div>
 
     <div className="px-4">
