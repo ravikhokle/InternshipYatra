@@ -1,0 +1,29 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.internship-details h1,
+.internship-details h2,
+.internship-details h3 {
+  @apply font-semibold text-gray-900 mt-4 mb-2;
+}
+
+.internship-details p {
+  @apply mb-3 leading-relaxed;
+}
+
+.internship-details ul {
+  @apply list-disc pl-5 mb-3 space-y-1;
+}
+
+.internship-details ol {
+  @apply list-decimal pl-5 mb-3 space-y-1;
+}
+
+.internship-details a {
+  @apply text-purple-600 hover:underline;
+}
+
+.internship-details strong {
+  @apply font-semibold text-gray-900;
+}
