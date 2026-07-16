@@ -1,8 +1,10 @@
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useMemo, useRef } from "react";
 import { handleError, handleSuccess } from "../Utils";
 import axiosInstance from "../api/axiosInstance";
 import InternshipCard from "../components/InternshipCard";
 import InternshipFilters, { ActiveFilterTags } from "../components/InternshipFilters";
+import { PageContainer, SidebarMainRow } from "../components/ContentShell";
+import { AppIcons, LoadingSpinner } from "../components/AppIcons";
 import {
   SORT_OPTIONS,
   filterPosts,
@@ -33,8 +35,9 @@ const Pagination = ({ page, totalPages, setPage }) => {
         type="button"
         disabled={page <= 1}
         onClick={() => setPage((p) => p - 1)}
-        className="px-3 py-1.5 text-sm border border-gray-200 rounded-lg disabled:opacity-40 hover:bg-gray-50"
+        className="inline-flex items-center gap-1 px-3 py-1.5 text-sm border border-gray-200 rounded-lg disabled:opacity-40 hover:bg-gray-50"
       >
+        <AppIcons.ChevronLeft className="w-4 h-4" />
         Previous
       </button>
       {pages.map((p) => (
@@ -55,9 +58,10 @@ const Pagination = ({ page, totalPages, setPage }) => {
         type="button"
         disabled={page >= totalPages}
         onClick={() => setPage((p) => p + 1)}
-        className="px-3 py-1.5 text-sm border border-gray-200 rounded-lg disabled:opacity-40 hover:bg-gray-50"
+        className="inline-flex items-center gap-1 px-3 py-1.5 text-sm border border-gray-200 rounded-lg disabled:opacity-40 hover:bg-gray-50"
       >
         Next
+        <AppIcons.ChevronRight className="w-4 h-4" />
       </button>
     </div>
   );
@@ -69,6 +73,17 @@ const Home = () => {
   const [filters, setFilters] = useState(DEFAULT_FILTERS);
   const [page, setPage] = useState(1);
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
+  const [appliedPostIds, setAppliedPostIds] = useState(() => new Set());
+  const listingsRef = useRef(null);
+
+  const scrollToResults = () => {
+    listingsRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
+
+  const handleSearchSubmit = (e) => {
+    e.preventDefault();
+    scrollToResults();
+  };
 
   useEffect(() => {
     const fetchPosts = async () => {
@@ -82,6 +97,26 @@ const Home = () => {
       }
     };
     fetchPosts();
+  }, []);
+
+  useEffect(() => {
+    const fetchApplied = async () => {
+      const userId = localStorage.getItem("userID");
+      if (!userId) {
+        setAppliedPostIds(new Set());
+        return;
+      }
+      try {
+        const response = await axiosInstance.get("/profile/userApplications", {
+          params: { _id: userId },
+        });
+        const ids = new Set((response.data || []).map((app) => String(app.postId)));
+        setAppliedPostIds(ids);
+      } catch {
+        setAppliedPostIds(new Set());
+      }
+    };
+    fetchApplied();
   }, []);
 
   useEffect(() => {
@@ -111,9 +146,13 @@ const Home = () => {
         params: { postId, _id },
       });
       if (response.status === 200) {
+        setAppliedPostIds((prev) => new Set([...prev, String(postId)]));
         handleSuccess(response?.data.message || "Application submitted successfully!");
       }
     } catch (error) {
+      if (error.response?.status === 409) {
+        setAppliedPostIds((prev) => new Set([...prev, String(postId)]));
+      }
       handleError(error.response?.data?.message || error.message);
     }
   };
@@ -130,12 +169,17 @@ const Home = () => {
             <p className="py-5 text-[#303030]">
               Thousands of internships in all the leading sectors are waiting for you.
             </p>
-            <div className="py-3 mt-5 md:mr-10 sm:px-5 sm:py-5 sm:mr-0 flex items-center bg-white rounded-md shadow-sm">
-              <img
-                className="h-5 px-3"
-                src="https://res.cloudinary.com/db1xxbbat/image/upload/v1736079370/frontend/cohzy0fnjfdq5y4hnoop.png"
-                alt="Search Icon"
-              />
+            <form
+              onSubmit={handleSearchSubmit}
+              className="py-3 mt-5 md:mr-10 sm:px-5 sm:py-5 sm:mr-0 flex items-center bg-white rounded-md shadow-sm"
+            >
+              <button
+                type="submit"
+                aria-label="Search internships"
+                className="shrink-0 bg-transparent border-0 p-0 mx-3 cursor-pointer"
+              >
+                <AppIcons.Search className="h-5 w-5 text-gray-400" />
+              </button>
               <input
                 className="outline-none w-1/2 flex-grow text-sm md:text-base"
                 type="text"
@@ -143,7 +187,7 @@ const Home = () => {
                 onChange={(e) => updateFilter("search", e.target.value)}
                 placeholder="Internship Title, Company, or Skills"
               />
-            </div>
+            </form>
           </div>
           <div className="flex items-center justify-center w-full lg:w-[50%]">
             <img
@@ -156,46 +200,43 @@ const Home = () => {
       </div>
 
       {/* Listings section */}
-      <div className="max-w-7xl mx-auto w-full px-4 sm:px-6 py-8 sm:py-10">
-        <div className="flex flex-col lg:flex-row gap-6 lg:gap-8">
-          <button
-            type="button"
-            onClick={() => setMobileFiltersOpen(!mobileFiltersOpen)}
-            className="lg:hidden flex items-center justify-between gap-2 py-3 px-4 bg-white border border-gray-200 rounded-2xl text-sm font-semibold text-gray-800 shadow-sm"
-          >
-            <span className="flex items-center gap-2">
-              <svg className="w-4 h-4 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
-              </svg>
-              Filters
-              {activeFilterCount > 0 && (
-                <span className="min-w-[18px] h-[18px] px-1 flex items-center justify-center text-[10px] font-bold text-white bg-purple-600 rounded-full">
-                  {activeFilterCount}
+      <PageContainer className="py-8 sm:py-10">
+        <SidebarMainRow
+          sidebar={
+            <>
+              <button
+                type="button"
+                onClick={() => setMobileFiltersOpen(!mobileFiltersOpen)}
+                className="lg:hidden flex items-center justify-between gap-2 py-3 px-4 bg-white border border-gray-200 rounded-2xl text-sm font-semibold text-gray-800 shadow-sm w-full mb-4"
+              >
+                <span className="flex items-center gap-2">
+                  <AppIcons.Filter className="w-4 h-4 text-purple-600" />
+                  Filters
+                  {activeFilterCount > 0 && (
+                    <span className="min-w-[18px] h-[18px] px-1 flex items-center justify-center text-[10px] font-bold text-white bg-purple-600 rounded-full">
+                      {activeFilterCount}
+                    </span>
+                  )}
                 </span>
-              )}
-            </span>
-            <svg
-              className={`w-4 h-4 text-gray-400 transition-transform ${mobileFiltersOpen ? "rotate-180" : ""}`}
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-            </svg>
-          </button>
+                <AppIcons.ChevronDown
+                  className={`w-4 h-4 text-gray-400 transition-transform ${mobileFiltersOpen ? "rotate-180" : ""}`}
+                />
+              </button>
 
-          <aside className={`lg:w-80 shrink-0 ${mobileFiltersOpen ? "block" : "hidden lg:block"}`}>
-            <div className="sticky top-24">
-              <InternshipFilters
-                filters={filters}
-                updateFilter={updateFilter}
-                clearFilters={clearFilters}
-                activeCount={activeFilterCount}
-              />
-            </div>
-          </aside>
-
-          <main className="flex-1 min-w-0">
+              <aside className={`${mobileFiltersOpen ? "block" : "hidden lg:block"}`}>
+                <div className="sticky top-24">
+                  <InternshipFilters
+                    filters={filters}
+                    updateFilter={updateFilter}
+                    clearFilters={clearFilters}
+                    activeCount={activeFilterCount}
+                  />
+                </div>
+              </aside>
+            </>
+          }
+        >
+          <main ref={listingsRef} className="min-w-0 w-full scroll-mt-24">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
               <div>
                 <h2 className="text-lg sm:text-xl font-bold text-gray-900">Internships</h2>
@@ -230,19 +271,25 @@ const Home = () => {
 
             {loading ? (
               <div className="flex justify-center py-20">
-                <div className="w-10 h-10 border-2 border-purple-600 border-t-transparent rounded-full animate-spin" />
+                <LoadingSpinner />
               </div>
             ) : processed.items.length > 0 ? (
               <>
                 <div className="space-y-4">
                   {processed.items.map((post) => (
-                    <InternshipCard key={post._id} post={post} onApply={handleApplyClick} />
+                    <InternshipCard
+                      key={post._id}
+                      post={post}
+                      onApply={handleApplyClick}
+                      hasApplied={appliedPostIds.has(String(post._id))}
+                    />
                   ))}
                 </div>
                 <Pagination page={page} totalPages={processed.totalPages} setPage={setPage} />
               </>
             ) : (
               <div className="bg-white rounded-xl border border-gray-200 p-10 text-center">
+                <AppIcons.Inbox className="w-12 h-12 text-gray-300 mx-auto mb-3" />
                 <p className="text-gray-600 font-medium">No internships match your filters</p>
                 <p className="text-sm text-gray-400 mt-1">Try adjusting filters or search terms</p>
                 <button
@@ -255,8 +302,8 @@ const Home = () => {
               </div>
             )}
           </main>
-        </div>
-      </div>
+        </SidebarMainRow>
+      </PageContainer>
     </div>
   );
 };

@@ -3,7 +3,7 @@ import PostForm from "../components/PostForm";
 
 const UpdatePost = () => {
   const { id } = useParams();
-  return <PostForm mode="edit" postId={id} backTo="/userposts" />;
+  return <PostForm mode="edit" postId={id} backTo="/profile" />;
 };
 
 export default UpdatePost;

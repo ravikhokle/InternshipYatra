@@ -31,6 +31,36 @@ export const parseSkills = (skills = "") =>
     .map((s) => s.trim())
     .filter(Boolean);
 
+const stripHtml = (html = "") =>
+  String(html)
+    .replace(/<[^>]*>/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+
+const buildSearchHaystack = (post) =>
+  stripHtml(
+    [
+      post.title,
+      post.companyName,
+      post.skills,
+      post.location,
+      post.duration,
+      post.postDetails,
+    ]
+      .filter(Boolean)
+      .join(" ")
+  ).toLowerCase();
+
+const matchesSearch = (post, search) => {
+  const term = search.trim().toLowerCase();
+  if (!term) return true;
+
+  const haystack = buildSearchHaystack(post);
+  const terms = term.split(/\s+/).filter(Boolean);
+
+  return terms.every((word) => haystack.includes(word));
+};
+
 const isWithinDateRange = (createdAt, range) => {
   if (!createdAt || range === "all") return true;
   const posted = new Date(createdAt).getTime();
@@ -50,13 +80,8 @@ export const filterPosts = (posts, filters) => {
     datePosted = "all",
   } = filters;
 
-  const term = search.trim().toLowerCase();
-
   return posts.filter((post) => {
-    if (term) {
-      const haystack = `${post.title} ${post.companyName} ${post.skills} ${post.location}`.toLowerCase();
-      if (!haystack.includes(term)) return false;
-    }
+    if (!matchesSearch(post, search)) return false;
 
     if (workMode !== "All" && getWorkMode(post.location) !== workMode) return false;
 

@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const Post = require("../Models/PostModel");
+const { ensureUniqueSlug } = require("../lib/slug");
 
 const updatePost = async (req, res) => {
   try {
@@ -8,6 +9,14 @@ const updatePost = async (req, res) => {
     if (!postId || !mongoose.isValidObjectId(postId)) {
       return res.status(400).json({
         message: "Invalid post id",
+        success: false,
+      });
+    }
+
+    const existingPost = await Post.findById(postId);
+    if (!existingPost) {
+      return res.status(404).json({
+        message: "Failed to update your post.",
         success: false,
       });
     }
@@ -22,18 +31,15 @@ const updatePost = async (req, res) => {
     if (startDate) updateFields.startDate = startDate;
     if (postDetails) updateFields.postDetails = postDetails;
 
+    if (title && title !== existingPost.title) {
+      updateFields.slug = await ensureUniqueSlug(title, postId);
+    }
+
     const updatedPost = await Post.findByIdAndUpdate(
       postId,
       { $set: updateFields },
       { new: true }
     );
-
-    if (!updatedPost) {
-      return res.status(404).json({
-        message: "Failed to update your post.",
-        success: false,
-      });
-    }
 
     res.status(200).json({
       message: "Post updated",

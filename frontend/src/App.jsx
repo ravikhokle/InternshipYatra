@@ -9,6 +9,7 @@ import ResetPassword from './pages/ResetPassword'
 import Home from './pages/Home'
 import SignUp from './pages/SignUp'
 import About from './pages/About'
+import ContactUs from './pages/ContactUs'
 import NotFound from './pages/NotFound'
 import CreatePost from './pages/CreatePost';
 import ProtectedRoutes from './pages/ProtectedRoutes';
@@ -20,7 +21,6 @@ import UpdateProfileImg from './pages/UpdateProfileImg'
 import ViewResume from './pages/ViewResume';
 import UpdateCompanyLogo from './pages/UpdateCompanyLogo'
 import PublicProfile from './pages/PublicProfile';
-import DisplayUserPosts from './pages/DisplayUserPosts';
 import ViewDetails from './pages/ViewDetails';
 import AppliedUsers from './pages/AppliedUsers';
 import UpdatePost from './pages/UpdatePost';
@@ -28,8 +28,9 @@ import UpdateUserProfile from './pages/UpdateUserProfile';
 
 function App() {
   return (
-    <>
+    <div className="flex flex-col min-h-screen">
       <Header />
+      <main className="flex-1">
       <Routes>
         <Route path='/login' element={<Login />} />
         <Route path='/forgot-password' element={<ForgotPassword />} />
@@ -38,10 +39,9 @@ function App() {
         <Route path='/signup' element={<SignUp />} />
         <Route path='/verify-signup-otp' element={<VerifySignupOTP />} />
         <Route path='/about' element={<About />} />
+        <Route path='/contact' element={<ContactUs />} />
         <Route path='/' element={<Home />} />
-        <Route path='*' element={<NotFound />} />
-        <Route path="/publicprofile/:id" element={<PublicProfile />} />
-        <Route path='/internship/:id' element={<ViewDetails />} />
+        <Route path="/publicprofile/:username" element={<PublicProfile />} />
 
         <Route element={<ProtectedRoutes />}>
           <Route path='/profile' element={<UserProfile />} />
@@ -54,13 +54,17 @@ function App() {
           <Route path='/createpost' element={<CreatePost />} />
           <Route path="/updatepost/:id" element={<UpdatePost />} />
           <Route path='/appliedusers/:id' element={<AppliedUsers />} />
-          <Route path='/userposts' element={<DisplayUserPosts />} />
         </Route>
+
+        <Route path='/internship/:id' element={<ViewDetails />} />
+        <Route path='/:slug' element={<ViewDetails />} />
+        <Route path='*' element={<NotFound />} />
       </Routes>
+      </main>
       <Footer />
       {/* Single global ToastContainer — eliminates duplicate toasts across pages */}
       <ToastContainer position="top-right" />
-    </>
+    </div>
   )
 }
 

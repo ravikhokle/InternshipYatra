@@ -28,8 +28,13 @@ export const DEFAULT_PRIVACY = {
   companyBio: true,
 };
 
-export const isFieldPublic = (privacySettings, field) =>
-  privacySettings?.[field] !== false;
+export const isFieldPublic = (privacySettings, field) => {
+  const merged = mergePrivacy(privacySettings);
+  if (field === "number" || field === "email") {
+    return merged[field] === true;
+  }
+  return merged[field] !== false;
+};
 
 export const mergePrivacy = (settings) => ({
   ...DEFAULT_PRIVACY,

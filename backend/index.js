@@ -9,6 +9,7 @@ const DBConnect = require('./Models/db');
 const AuthRouter = require('./Routes/AuthRouter');
 const PostRouter = require('./Routes/PostRouter');
 const ProfileRouter = require('./Routes/ProfileRouter');
+const ContactRouter = require('./Routes/ContactRouter');
 
 const PORT = process.env.PORT || 8000;
 
@@ -16,11 +17,9 @@ DBConnect();
 
 const allowedOrigins = [
     'http://localhost:5173',
-    'http://localhost:4173',
     process.env.CLIENT_URL,
     process.env.FRONTEND_URL,
-    'https://internshipyatra.ravikhokle.site',
-    'https://www.internshipyatra.ravikhokle.site',
+    'https://internshipyatra.vercel.app',
 ].filter(Boolean);
 
 app.use(cors({
@@ -47,6 +46,7 @@ if (fs.existsSync(publicDir)) {
 app.use('/profile', ProfileRouter);
 app.use('/auth', AuthRouter);
 app.use('/posts', PostRouter);
+app.use('/contact', ContactRouter);
 
 // Serve React build in production (single-server deploy)
 const frontendDist = path.join(__dirname, '../frontend/dist');

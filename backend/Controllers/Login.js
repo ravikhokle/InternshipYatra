@@ -50,6 +50,7 @@ const Login = async (req, res) => {
             accessToken,
             name: userData.name,
             userID: userData._id,
+            username: userData.username,
             userProfile: userData.profileImgURL,
         });
 

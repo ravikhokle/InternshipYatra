@@ -121,7 +121,7 @@ const SignUp = () => {
   return (
     <AuthPageShell
       heroTitle="Start your journey today"
-      heroDescription="Apply for internships, connect with companies, and publish opportunities — all in one place."
+      heroDescription="Browse internships, apply with your profile and resume, and let recruiters reach you when you share contact details publicly."
     >
       <AuthCard>
         <div className="flex justify-center mb-4">

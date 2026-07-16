@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 import axiosInstance from "../api/axiosInstance";
 import { handleError } from "../Utils";
 
@@ -34,6 +34,8 @@ const parseApiError = async (error) => {
 
 const ViewResume = () => {
   const { userId } = useParams();
+  const location = useLocation();
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [profile, setProfile] = useState(null);
   const [pdfUrl, setPdfUrl] = useState(null);
@@ -116,20 +118,37 @@ const ViewResume = () => {
   };
 
   const displayName = profile?.name || "Resume";
+  const returnPath = location.state?.from;
+  const returnLabel = location.state?.fromLabel || "Back";
+  const backTo = isOwnResume && !returnPath ? "/profile" : returnPath;
+  const backLabel = isOwnResume && !returnPath ? "Back to profile" : `Back to ${returnLabel}`;
 
   return (
     <div className="min-h-[calc(100vh-80px)] bg-[#f3f2ef]">
       <div className="bg-white border-b border-gray-200 shadow-sm">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 py-4 sm:py-5">
-          <Link
-            to={isOwnResume ? "/profile" : -1}
-            className="inline-flex items-center gap-1.5 text-sm text-purple-600 hover:text-purple-800 font-medium mb-4"
-          >
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-            </svg>
-            Back to profile
-          </Link>
+          {backTo ? (
+            <Link
+              to={backTo}
+              className="inline-flex items-center gap-1.5 text-sm text-purple-600 hover:text-purple-800 font-medium mb-4"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+              </svg>
+              {backLabel}
+            </Link>
+          ) : (
+            <button
+              type="button"
+              onClick={() => navigate(-1)}
+              className="inline-flex items-center gap-1.5 text-sm text-purple-600 hover:text-purple-800 font-medium mb-4"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+              </svg>
+              Go back
+            </button>
+          )}
 
           <div className="flex flex-col sm:flex-row sm:items-center gap-4">
             <div className="flex items-center gap-4 flex-1 min-w-0">

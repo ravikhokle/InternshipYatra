@@ -46,6 +46,78 @@ const sendOTPEmail = async (toEmail, otp) => {
         `,
     };
 
+    const transporter = getTransporter();
+    await transporter.sendMail(mailOptions);
+};
+
+const sendContactEmail = async ({ name, email, subject, message }) => {
+    const to = process.env.CONTACT_EMAIL || process.env.EMAIL_USER;
+    const mailSubject = subject?.trim() || 'Contact from InternshipYatra';
+
+    const mailOptions = {
+        from: `"InternshipYatra" <${process.env.EMAIL_USER}>`,
+        to,
+        replyTo: email,
+        subject: `[Contact] ${mailSubject}`,
+        html: `
+        <div style="font-family: Arial, sans-serif; max-width: 560px; margin: auto; padding: 32px; border: 1px solid #e5e7eb; border-radius: 12px;">
+            <h2 style="color: #7c3aed; margin-bottom: 8px;">New Contact Message</h2>
+            <p style="color: #374151; font-size: 15px; margin: 0 0 16px;">You received a message from the InternshipYatra contact form.</p>
+            <table style="width: 100%; border-collapse: collapse; font-size: 14px; color: #374151;">
+                <tr>
+                    <td style="padding: 8px 0; font-weight: 600; width: 100px;">Name</td>
+                    <td style="padding: 8px 0;">${name}</td>
+                </tr>
+                <tr>
+                    <td style="padding: 8px 0; font-weight: 600;">Email</td>
+                    <td style="padding: 8px 0;"><a href="mailto:${email}">${email}</a></td>
+                </tr>
+                <tr>
+                    <td style="padding: 8px 0; font-weight: 600;">Subject</td>
+                    <td style="padding: 8px 0;">${mailSubject}</td>
+                </tr>
+            </table>
+            <div style="background: #f9fafb; border-radius: 8px; padding: 16px; margin-top: 20px;">
+                <p style="margin: 0 0 8px; color: #6b7280; font-size: 13px; font-weight: 600;">Message</p>
+                <p style="margin: 0; color: #111827; font-size: 15px; white-space: pre-wrap; line-height: 1.6;">${message}</p>
+            </div>
+        </div>
+        `,
+        text: `Name: ${name}\nEmail: ${email}\nSubject: ${mailSubject}\n\n${message}`,
+    };
+
+    const transporter = getTransporter();
+    await transporter.sendMail(mailOptions);
+};
+
+const sendContactThankYouEmail = async ({ name, email, subject }) => {
+    const mailSubject = subject?.trim() || 'your message';
+
+    const mailOptions = {
+        from: `"InternshipYatra" <${process.env.EMAIL_USER}>`,
+        to: email,
+        subject: 'Thank you for contacting InternshipYatra',
+        html: `
+        <div style="font-family: Arial, sans-serif; max-width: 480px; margin: auto; padding: 32px; border: 1px solid #e5e7eb; border-radius: 12px;">
+            <h2 style="color: #7c3aed; margin-bottom: 8px;">InternshipYatra</h2>
+            <p style="color: #374151; font-size: 16px;">Hi ${name},</p>
+            <p style="color: #374151; font-size: 16px; line-height: 1.6;">
+                Thank you for reaching out to us. We have received your message regarding <strong>${mailSubject}</strong>.
+            </p>
+            <p style="color: #374151; font-size: 16px; line-height: 1.6;">
+                Our team will review it and get in touch with you shortly — usually within 1–2 business days.
+            </p>
+            <p style="color: #6b7280; font-size: 14px; margin-top: 24px;">
+                If your query is urgent, you can also reply directly to this email.
+            </p>
+            <hr style="border: none; border-top: 1px solid #e5e7eb; margin: 24px 0;" />
+            <p style="color: #9ca3af; font-size: 12px; text-align: center;">© ${new Date().getFullYear()} InternshipYatra · All rights reserved.</p>
+        </div>
+        `,
+        text: `Hi ${name},\n\nThank you for reaching out to us. We have received your message regarding "${mailSubject}".\n\nOur team will review it and get in touch with you shortly — usually within 1–2 business days.\n\nIf your query is urgent, you can also reply directly to this email.`,
+    };
+
+    const transporter = getTransporter();
     await transporter.sendMail(mailOptions);
 };
 
@@ -76,4 +148,4 @@ const sendSignupOTPEmail = async (toEmail, otp, name) => {
     await transporter.sendMail(mailOptions);
 };
 
-module.exports = { sendOTPEmail, sendSignupOTPEmail };
+module.exports = { sendOTPEmail, sendSignupOTPEmail, sendContactEmail, sendContactThankYouEmail };

@@ -178,7 +178,7 @@ const calcProgress = (form, content, workMode, isUnpaid) => {
   return Math.round((checks.filter(Boolean).length / checks.length) * 100);
 };
 
-const PostForm = ({ mode = "create", postId, backTo = "/userposts" }) => {
+const PostForm = ({ mode = "create", postId, backTo = "/profile" }) => {
   const navigate = useNavigate();
   const editorRef = useRef(null);
   const [form, setForm] = useState(EMPTY_FORM);
@@ -337,7 +337,7 @@ const PostForm = ({ mode = "create", postId, backTo = "/userposts" }) => {
         });
         if (response.data.success) {
           handleSuccess(response.data.message);
-          setTimeout(() => navigate("/userposts"), 1000);
+          setTimeout(() => navigate("/profile"), 1000);
         } else {
           handleError(response.data.message);
         }
@@ -380,13 +380,11 @@ const PostForm = ({ mode = "create", postId, backTo = "/userposts" }) => {
       <div className="max-w-6xl mx-auto">
         <div className="mb-6 sm:mb-8">
           <Link to={backTo} className="text-purple-600 text-sm font-medium hover:underline">
-            ← {mode === "edit" ? "Back to My Posts" : "Back to Home"}
+            ← {mode === "edit" ? "Back to Profile" : "Back to Home"}
           </Link>
           <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mt-3">
             <div>
-              <p className="text-purple-600 font-semibold text-xs uppercase tracking-widest mb-1">
-                Recruiter Hub
-              </p>
+              
               <h1 className="text-xl sm:text-2xl font-bold text-gray-900">
                 {mode === "edit" ? "Edit Internship Post" : "Post an Internship"}
               </h1>

@@ -24,11 +24,15 @@ const userPosts = async (req, res) => {
 
         const postsData = userPosts.map(post => ({
             id: post._id,
+            slug: post.slug,
             title: post.title,
             companyName: post.companyName,
             location: post.location,
             stipend: post.stipend,
             duration: post.duration,
+            skills: post.skills,
+            startDate: post.startDate,
+            companyLogoURL: post.companyLogoURL,
             createdAt: post.createdAt,
         }));
 

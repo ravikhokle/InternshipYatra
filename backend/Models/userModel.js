@@ -5,6 +5,17 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
+    username: {
+        type: String,
+        unique: true,
+        sparse: true,
+        lowercase: true,
+        trim: true,
+    },
+    usernameChangedAt: {
+        type: Date,
+        default: null,
+    },
     email: {
         type: String,
         required: true,
@@ -106,6 +117,21 @@ const userSchema = new mongoose.Schema({
     },
 
 }, { timestamps: true });
+
+userSchema.pre('save', async function assignUsername(next) {
+    if (this.username) {
+        return next();
+    }
+
+    try {
+        const { ensureUniqueUsername } = require('../lib/username');
+        const base = this.name || this.email?.split('@')[0] || 'user';
+        this.username = await ensureUniqueUsername(base, this._id);
+        next();
+    } catch (error) {
+        next(error);
+    }
+});
 
 const User = mongoose.model('User', userSchema);
 

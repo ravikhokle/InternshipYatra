@@ -1,11 +1,13 @@
 import { Link } from "react-router-dom";
 import { format } from "date-fns";
 import { getWorkMode, parseSkills } from "../utils/internshipFilters";
+import { getInternshipUrl } from "../utils/internshipSlug";
+import { AppIcons, MetaTag } from "../components/AppIcons";
 
 const DEFAULT_LOGO =
   "https://res.cloudinary.com/db1xxbbat/image/upload/v1736079369/frontend/i0qh0dcvftwjvbdmw4ou.png";
 
-const InternshipCard = ({ post, onApply }) => {
+const InternshipCard = ({ post, onApply, hasApplied = false }) => {
   const skills = parseSkills(post.skills);
   const workMode = getWorkMode(post.location);
 
@@ -25,19 +27,18 @@ const InternshipCard = ({ post, onApply }) => {
               </h3>
               <p className="text-sm text-gray-600 mt-0.5">{post.companyName}</p>
             </div>
-            <span className="px-2.5 py-1 bg-purple-50 text-purple-700 text-xs font-semibold rounded-full shrink-0">
+            <span className="inline-flex items-center gap-1 px-2.5 py-1 bg-purple-50 text-purple-700 text-xs font-semibold rounded-full shrink-0">
+              <AppIcons.Stipend className="w-3 h-3" />
               {post.stipend === 0 ? "Unpaid" : `₹${post.stipend}/mo`}
             </span>
           </div>
 
           <div className="flex flex-wrap gap-2 mt-3">
-            <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-gray-100 text-gray-600 text-xs rounded-md">
-              📍 {post.location}
-            </span>
-            <span className="px-2 py-0.5 bg-blue-50 text-blue-700 text-xs rounded-md">{workMode}</span>
-            <span className="px-2 py-0.5 bg-gray-100 text-gray-600 text-xs rounded-md">
-              ⏱ {post.duration}
-            </span>
+            <MetaTag icon={AppIcons.Location}>{post.location}</MetaTag>
+            <MetaTag icon={AppIcons.WorkMode} className="px-2 py-0.5 bg-blue-50 text-blue-700 text-xs rounded-md">
+              {workMode}
+            </MetaTag>
+            <MetaTag icon={AppIcons.Duration}>{post.duration}</MetaTag>
           </div>
 
           {skills.length > 0 && (
@@ -56,7 +57,8 @@ const InternshipCard = ({ post, onApply }) => {
             </div>
           )}
 
-          <p className="text-xs text-gray-400 mt-3">
+          <p className="inline-flex items-center gap-1 text-xs text-gray-400 mt-3">
+            <AppIcons.Calendar className="w-3.5 h-3.5" />
             Starts {format(new Date(post.startDate), "MMM d, yyyy")}
           </p>
         </div>
@@ -64,18 +66,24 @@ const InternshipCard = ({ post, onApply }) => {
 
       <div className="flex flex-wrap gap-2 mt-5 pt-4 border-t border-gray-100">
         <Link
-          to={`/internship/${post._id}`}
+          to={getInternshipUrl(post)}
           className="flex-1 sm:flex-none text-center px-4 py-2 text-sm border border-gray-200 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-medium"
         >
           View Details
         </Link>
-        <button
-          type="button"
-          onClick={() => onApply(post._id)}
-          className="flex-1 sm:flex-none px-4 py-2 text-sm bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors font-medium"
-        >
-          Apply Now
-        </button>
+        {hasApplied ? (
+          <span className="flex-1 sm:flex-none text-center px-4 py-2 text-sm bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-lg font-medium cursor-default">
+            Already Applied
+          </span>
+        ) : (
+          <button
+            type="button"
+            onClick={() => onApply(post._id)}
+            className="flex-1 sm:flex-none px-4 py-2 text-sm bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors font-medium"
+          >
+            Apply Now
+          </button>
+        )}
       </div>
     </article>
   );

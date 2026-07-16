@@ -36,6 +36,7 @@ const issueAuthResponse = async (user, res, message) => {
         accessToken,
         name: user.name,
         userID: user._id,
+        username: user.username,
         userProfile: user.profileImgURL,
         isNewUser: message.includes('created'),
     });

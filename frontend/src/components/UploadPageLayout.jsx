@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { AuthCard } from "./AuthLayout";
+import { AppIcons } from "./AppIcons";
 
 export const UploadPageShell = ({ title, subtitle, backTo = "/profile", children }) => (
   <div className="min-h-[calc(100vh-80px)] bg-gradient-to-br from-[#f5f0ff] via-white to-[#ede9fe] py-6 sm:py-10 px-4 sm:px-6">
@@ -8,9 +9,7 @@ export const UploadPageShell = ({ title, subtitle, backTo = "/profile", children
         to={backTo}
         className="inline-flex items-center gap-1.5 text-sm text-purple-600 hover:text-purple-800 font-medium mb-4 sm:mb-6 transition-colors"
       >
-        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-        </svg>
+        <AppIcons.ArrowLeft className="w-4 h-4" />
         Back to profile
       </Link>
 

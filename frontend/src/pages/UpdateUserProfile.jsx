@@ -1,9 +1,10 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { handleError, handleSuccess } from "../Utils";
 import axiosInstance from "../api/axiosInstance";
 import { authInputClass, authButtonClass } from "../components/AuthLayout";
 import { mergePrivacy, PRIVACY_FIELDS, DEFAULT_PRIVACY } from "../utils/privacy";
+import { getUsernameEditStatus, normalizeUsername } from "../utils/profileUsername";
 
 const PrivacyToggle = ({ isPublic, onChange }) => (
   <button
@@ -52,6 +53,7 @@ const UpdateUserProfile = () => {
   const [user, setUser] = useState({
     name: "",
     email: "",
+    username: "",
     bio: "",
     city: "",
     number: "",
@@ -64,20 +66,32 @@ const UpdateUserProfile = () => {
     companyName: "",
     companyBio: "",
   });
+  const [initialUsername, setInitialUsername] = useState("");
+  const [usernameChangedAt, setUsernameChangedAt] = useState(null);
+  const [usernameStatus, setUsernameStatus] = useState({ checking: false, available: null, message: "" });
   const [privacy, setPrivacy] = useState({ ...DEFAULT_PRIVACY });
   const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
+  const userID = localStorage.getItem("userID");
+
+  const usernameEditStatus = useMemo(
+    () => getUsernameEditStatus(usernameChangedAt),
+    [usernameChangedAt]
+  );
+
+  const normalizedUsername = useMemo(() => normalizeUsername(user.username), [user.username]);
+  const usernameChanged = normalizedUsername !== initialUsername;
 
   useEffect(() => {
     const fetchProfileData = async () => {
       try {
-        const userID = localStorage.getItem("userID");
         const response = await axiosInstance.get("/profile", { params: { _id: userID } });
         const data = response.data;
         setUser({
           name: data.name || "",
           email: data.email || "",
+          username: data.username || "",
           bio: data.bio || "",
           city: data.city || "",
           number: data.number || "",
@@ -90,13 +104,44 @@ const UpdateUserProfile = () => {
           companyName: data.companyName || "",
           companyBio: data.companyBio || "",
         });
+        setInitialUsername(data.username || "");
+        setUsernameChangedAt(data.usernameChangedAt || null);
         setPrivacy(mergePrivacy(data.privacySettings));
       } catch (error) {
         handleError(error.response?.data?.message || "Failed to load profile");
       }
     };
     fetchProfileData();
-  }, []);
+  }, [userID]);
+
+  useEffect(() => {
+    if (!usernameEditStatus.canChange || !usernameChanged || normalizedUsername.length < 3) {
+      setUsernameStatus({ checking: false, available: null, message: "" });
+      return;
+    }
+
+    const timer = setTimeout(async () => {
+      setUsernameStatus({ checking: true, available: null, message: "" });
+      try {
+        const response = await axiosInstance.get("/profile/checkUsername", {
+          params: { username: normalizedUsername, _id: userID },
+        });
+        setUsernameStatus({
+          checking: false,
+          available: response.data.available,
+          message: response.data.message,
+        });
+      } catch (error) {
+        setUsernameStatus({
+          checking: false,
+          available: false,
+          message: error.response?.data?.message || "Could not check username",
+        });
+      }
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, [normalizedUsername, usernameChanged, usernameEditStatus.canChange, userID]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -113,8 +158,21 @@ const UpdateUserProfile = () => {
       return handleError("Name and email are required");
     }
 
+    if (usernameChanged) {
+      if (!usernameEditStatus.canChange) {
+        return handleError(`You can change your username again in ${usernameEditStatus.daysRemaining} day(s).`);
+      }
+
+      if (normalizedUsername.length < 3) {
+        return handleError("Username must be at least 3 characters");
+      }
+
+      if (usernameStatus.available === false) {
+        return handleError(usernameStatus.message || "This username is not available");
+      }
+    }
+
     setLoading(true);
-    const id = localStorage.getItem("userID");
 
     try {
       const result = await axiosInstance.put(
@@ -122,6 +180,7 @@ const UpdateUserProfile = () => {
         {
           name: user.name,
           email: user.email,
+          username: user.username,
           bio: user.bio,
           city: user.city,
           number: user.number,
@@ -135,7 +194,7 @@ const UpdateUserProfile = () => {
           companyBio: user.companyBio,
           privacySettings: privacy,
         },
-        { params: { _id: id } }
+        { params: { _id: userID } }
       );
 
       if (result.data.success) {
@@ -172,6 +231,47 @@ const UpdateUserProfile = () => {
 
             <Field label="Full Name *" id="name">
               <input id="name" name="name" type="text" value={user.name} onChange={handleChange} className={authInputClass} required />
+            </Field>
+
+            <Field
+              label="Username"
+              id="username"
+              hint={
+                !usernameEditStatus.canChange
+                  ? `You can change your username again in ${usernameEditStatus.daysRemaining} day(s).`
+                  : "Used in your public profile URL. You can change it once every 15 days if available."
+              }
+            >
+              <input
+                id="username"
+                name="username"
+                type="text"
+                value={user.username}
+                onChange={handleChange}
+                className={`${authInputClass} ${!usernameEditStatus.canChange ? "bg-gray-100 cursor-not-allowed" : ""}`}
+                disabled={!usernameEditStatus.canChange}
+                placeholder="your-username"
+              />
+              {usernameEditStatus.canChange && usernameChanged && normalizedUsername && (
+                <p className={`text-xs mt-1 ${
+                  usernameStatus.checking
+                    ? "text-gray-400"
+                    : usernameStatus.available
+                      ? "text-emerald-600"
+                      : usernameStatus.available === false
+                        ? "text-red-600"
+                        : "text-gray-400"
+                }`}>
+                  {usernameStatus.checking
+                    ? "Checking availability..."
+                    : usernameStatus.message || (normalizedUsername.length < 3 ? "Username must be at least 3 characters" : "")}
+                </p>
+              )}
+              {usernameEditStatus.canChange && normalizedUsername && (
+                <p className="text-xs text-gray-400 mt-1">
+                  Public URL: /publicprofile/{normalizedUsername || "your-username"}
+                </p>
+              )}
             </Field>
 
             <Field label="Email *" id="email" privacyKey="email" isPublic={privacy.email} onTogglePrivacy={() => togglePrivacy("email")}>

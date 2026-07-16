@@ -1,77 +1,83 @@
 import { Link } from "react-router-dom";
+import { PageContainer, SidebarMainRow } from "./ContentShell";
 
-const Footer = () => {
-  return (
-
-<footer className="sticky top-[90vh] bg-gradient-to-r from-[#c599e52d] from-7% via-[#ca84fc38] via-51% to-[#e2ccf23c] to-98% py-8 px-5 md:px-32 lg:px-32 text-[#303030]">
-<div className="flex flex-col md:flex-row justify-between gap-8 md:gap-0 items-center md:items-start">
-  
-  {/* Section 1: Author Info */}
-  <div className="flex flex-col gap-3 items-center md:items-start">
-    <p className="text-lg font-semibold">Made with 🖤 by Ravi Khokle</p>
-    <div className="flex flex-col gap-2">
-      <p className="flex gap-2 items-center">
-        <img src="https://res.cloudinary.com/db1xxbbat/image/upload/v1736079369/frontend/morvflgwmevg7f8mznch.png" alt="Linkedin Logo" className="w-5 h-5" />
-        <Link
-          className="text-blue-600 hover:underline"
-          target="_blank"
-          to="https://in.linkedin.com/in/ravikhokle"
-        >
-          Linkedin
-        </Link>
-      </p>
-      <p className="flex gap-2 items-center">
-        <img src="https://res.cloudinary.com/db1xxbbat/image/upload/v1736079368/frontend/k0mnhxfaajvxazphfeyx.png" alt="Github Logo" className="w-5 h-5" />
-        <Link
-          className="text-blue-600 hover:underline"
-          target="_blank"
-          to="https://github.com/ravikhokle"
-        >
-          GitHub
-        </Link>
-      </p>
-    </div>
-  </div>
-
-  {/* Section 2: Center Text */}
-  <div className="text-center md:text-left order-last md:order-none">
-    <p className="text-sm md:text-base">
-      &#169; {new Date().getFullYear()}{" "}
-      <Link to="/" className="text-purple-600 hover:underline">
-      InternshipYatra
-      </Link>{" "}
-      - All rights reserved.
-    </p>
-    <p className="text-xs md:text-sm text-gray-500">
-      All logos and trademarks belong to their respective owners.
-    </p>
-  </div>
-
-  {/* Section 3: Quick Links */}
-  <div className="flex flex-col gap-2 items-center md:items-start">
-    <h3 className="text-lg font-semibold">Quick Links</h3>
-    <ul className="flex flex-col gap-1">
-      <li>
-        <Link
-          to="/"
-          className="text-purple-600 hover:underline"
-        >
-          Home
-        </Link>
-      </li>
-      <li>
-        <Link
-          to="/about"
-          className="text-blue-600 hover:underline"
-        >
-          About
-        </Link>
-      </li>
+const FooterColumn = ({ title, links }) => (
+  <div className="min-w-0">
+    <h3 className="text-sm font-semibold text-gray-900 mb-4">{title}</h3>
+    <ul className="space-y-2.5">
+      {links.map(({ label, to, external }) => (
+        <li key={label}>
+          {external ? (
+            <a
+              href={to}
+              target="_blank"
+              rel="noreferrer"
+              className="text-sm text-gray-600 hover:text-purple-600 transition-colors"
+            >
+              {label}
+            </a>
+          ) : (
+            <Link to={to} className="text-sm text-gray-600 hover:text-purple-600 transition-colors">
+              {label}
+            </Link>
+          )}
+        </li>
+      ))}
     </ul>
   </div>
-</div>
-</footer>
+);
 
+const Footer = () => {
+  const year = new Date().getFullYear();
+
+  const studentLinks = [
+    { label: "Browse Internships", to: "/" },
+    { label: "Create Account", to: "/signup" },
+    { label: "Login", to: "/login" },
+    { label: "My Profile", to: "/profile" },
+  ];
+
+  const recruiterLinks = [
+    { label: "Post an Internship", to: "/createpost" },
+    { label: "Company Profile", to: "/updateuserprofile" },
+  ];
+
+  const companyLinks = [
+    { label: "About Us", to: "/about" },
+    { label: "Contact Us", to: "/contact" },
+    { label: "LinkedIn", to: "https://in.linkedin.com/in/ravikhokle", external: true },
+    { label: "GitHub", to: "https://github.com/ravikhokle", external: true },
+  ];
+
+  return (
+    <footer className="mt-auto w-full bg-gradient-to-r from-[#c599e52d] via-[#ca84fc38] to-[#e2ccf23c] border-t border-purple-100">
+      <PageContainer className="py-10 sm:py-12">
+        <SidebarMainRow
+          sidebar={
+            <>
+              <Link
+                to="/"
+                className="text-xl md:text-2xl font-semibold text-purple-600 hover:text-purple-700 transition-colors"
+              >
+                InternshipYatra
+              </Link>
+              <p className="text-sm text-[#303030] mt-4 leading-relaxed">
+                Browse internships, apply in one click, and share your profile and resume with recruiters who post roles on InternshipYatra.
+              </p>
+              <p className="text-xs sm:text-sm text-gray-500 mt-6">
+                &copy; {year} InternshipYatra. All rights reserved.
+              </p>
+            </>
+          }
+        >
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 lg:gap-8 w-full max-w-full">
+            <FooterColumn title="For Students" links={studentLinks} />
+            <FooterColumn title="For Recruiters" links={recruiterLinks} />
+            <FooterColumn title="Company" links={companyLinks} />
+          </div>
+        </SidebarMainRow>
+      </PageContainer>
+    </footer>
   );
 };
 

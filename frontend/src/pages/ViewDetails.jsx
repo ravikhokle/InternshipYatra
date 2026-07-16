@@ -1,18 +1,18 @@
 import { useState, useEffect } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useParams, useNavigate } from "react-router-dom";
 import { format } from "date-fns";
 import { handleError, handleSuccess } from "../Utils";
 import axiosInstance from "../api/axiosInstance";
 import { getWorkMode, parseSkills } from "../utils/internshipFilters";
+import { getInternshipUrl } from "../utils/internshipSlug";
+import { AppIcons, BackLink, IconBadge, LoadingSpinner, MetaTag, SectionTitle } from "../components/AppIcons";
 
 const DEFAULT_LOGO =
   "https://res.cloudinary.com/db1xxbbat/image/upload/v1736079369/frontend/i0qh0dcvftwjvbdmw4ou.png";
 
-const InfoRow = ({ icon, label, value }) => (
+const InfoRow = ({ icon: Icon, label, value }) => (
   <div className="flex items-start gap-3 py-3 border-b border-gray-100 last:border-0">
-    <div className="w-9 h-9 rounded-lg bg-purple-50 flex items-center justify-center shrink-0 text-purple-600">
-      {icon}
-    </div>
+    <IconBadge icon={Icon} />
     <div>
       <p className="text-xs text-gray-500">{label}</p>
       <p className="text-sm font-medium text-gray-900 mt-0.5">{value}</p>
@@ -21,16 +21,26 @@ const InfoRow = ({ icon, label, value }) => (
 );
 
 const ViewDetails = () => {
-  const { id } = useParams();
+  const { slug, id } = useParams();
+  const navigate = useNavigate();
+  const identifier = slug || id;
   const [post, setPost] = useState(null);
   const [loading, setLoading] = useState(true);
   const [applying, setApplying] = useState(false);
+  const [hasApplied, setHasApplied] = useState(false);
 
   useEffect(() => {
     const getInternshipDetails = async () => {
       try {
-        const response = await axiosInstance.get("/posts/viewdetails", { params: { id } });
-        setPost(response.data?.[0] || null);
+        const isObjectId = /^[a-f\d]{24}$/i.test(identifier || "");
+        const params = isObjectId ? { id: identifier } : { slug: identifier };
+        const response = await axiosInstance.get("/posts/viewdetails", { params });
+        const fetchedPost = response.data?.[0] || null;
+        setPost(fetchedPost);
+
+        if (fetchedPost?.slug && id && !slug) {
+          navigate(getInternshipUrl(fetchedPost), { replace: true });
+        }
       } catch {
         handleError("Error while fetching internship details");
       } finally {
@@ -38,8 +48,41 @@ const ViewDetails = () => {
       }
     };
 
-    if (id) getInternshipDetails();
-  }, [id]);
+    if (identifier) getInternshipDetails();
+  }, [identifier, id, slug, navigate]);
+
+  useEffect(() => {
+    const checkApplied = async () => {
+      const userId = localStorage.getItem("userID");
+      if (!userId || !post?._id) {
+        setHasApplied(false);
+        return;
+      }
+      try {
+        const response = await axiosInstance.get("/profile/userApplications", {
+          params: { _id: userId },
+        });
+        const applied = (response.data || []).some(
+          (app) => String(app.postId) === String(post._id)
+        );
+        setHasApplied(applied);
+      } catch {
+        setHasApplied(false);
+      }
+    };
+    checkApplied();
+  }, [post?._id]);
+
+  useEffect(() => {
+    if (!post) return undefined;
+
+    const previousTitle = document.title;
+    document.title = `${post.title} at ${post.companyName} | InternshipYatra`;
+
+    return () => {
+      document.title = previousTitle;
+    };
+  }, [post]);
 
   const handleApplyClick = async () => {
     const _id = localStorage.getItem("userID");
@@ -52,9 +95,13 @@ const ViewDetails = () => {
       });
 
       if (response.status === 200) {
+        setHasApplied(true);
         handleSuccess(response?.data.message || "Application submitted successfully!");
       }
     } catch (error) {
+      if (error.response?.status === 409) {
+        setHasApplied(true);
+      }
       handleError(error.response?.data?.message || error.message);
     } finally {
       setApplying(false);
@@ -64,7 +111,7 @@ const ViewDetails = () => {
   if (loading) {
     return (
       <div className="min-h-[calc(100vh-80px)] bg-[#f3f2ef] flex items-center justify-center">
-        <div className="w-10 h-10 border-2 border-purple-600 border-t-transparent rounded-full animate-spin" />
+        <LoadingSpinner />
       </div>
     );
   }
@@ -72,10 +119,9 @@ const ViewDetails = () => {
   if (!post) {
     return (
       <div className="min-h-[calc(100vh-80px)] bg-[#f3f2ef] flex flex-col items-center justify-center gap-4 px-4">
+        <AppIcons.Alert className="w-12 h-12 text-gray-300" />
         <p className="text-gray-600">Internship not found</p>
-        <Link to="/" className="text-purple-600 font-medium hover:underline">
-          ← Back to internships
-        </Link>
+        <BackLink to="/">Back to internships</BackLink>
       </div>
     );
   }
@@ -86,9 +132,7 @@ const ViewDetails = () => {
   return (
     <div className="min-h-screen bg-[#f3f2ef] py-6 sm:py-10 px-4 sm:px-6">
       <div className="max-w-5xl mx-auto">
-        <Link to="/" className="text-purple-600 text-sm font-medium hover:underline">
-          ← Back to internships
-        </Link>
+        <BackLink to="/" className="mt-0">Back to internships</BackLink>
 
         {/* Header card */}
         <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-5 sm:p-8 mt-4 mb-6">
@@ -102,11 +146,13 @@ const ViewDetails = () => {
               <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900">{post.title}</h1>
               <p className="text-base text-gray-600 mt-1">{post.companyName}</p>
               <div className="flex flex-wrap gap-2 mt-3">
-                <span className="px-2.5 py-1 bg-gray-100 text-gray-700 text-xs rounded-md">📍 {post.location}</span>
-                <span className="px-2.5 py-1 bg-blue-50 text-blue-700 text-xs rounded-md">{workMode}</span>
-                <span className="px-2.5 py-1 bg-purple-50 text-purple-700 text-xs font-semibold rounded-md">
+                <MetaTag icon={AppIcons.Location}>{post.location}</MetaTag>
+                <MetaTag icon={AppIcons.WorkMode} className="px-2.5 py-1 bg-blue-50 text-blue-700 text-xs rounded-md">
+                  {workMode}
+                </MetaTag>
+                <MetaTag icon={AppIcons.Stipend} className="px-2.5 py-1 bg-purple-50 text-purple-700 text-xs font-semibold rounded-md">
                   {post.stipend === 0 ? "Unpaid" : `₹${post.stipend}/month`}
-                </span>
+                </MetaTag>
               </div>
             </div>
           </div>
@@ -117,7 +163,9 @@ const ViewDetails = () => {
           <div className="lg:col-span-2 space-y-6">
             {skills.length > 0 && (
               <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-5 sm:p-6">
-                <h2 className="text-base font-semibold text-gray-900 mb-3">Skills Required</h2>
+                <SectionTitle icon={AppIcons.Skills} className="text-base font-semibold text-gray-900 mb-3 flex items-center gap-2">
+                  Skills Required
+                </SectionTitle>
                 <div className="flex flex-wrap gap-2">
                   {skills.map((skill) => (
                     <span
@@ -132,7 +180,9 @@ const ViewDetails = () => {
             )}
 
             <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-5 sm:p-6">
-              <h2 className="text-base font-semibold text-gray-900 mb-4">About this internship</h2>
+              <SectionTitle icon={AppIcons.Document} className="text-base font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                About this internship
+              </SectionTitle>
               <div
                 className="text-sm sm:text-base text-gray-700 leading-relaxed internship-details"
                 dangerouslySetInnerHTML={{ __html: post.postDetails }}
@@ -147,39 +197,33 @@ const ViewDetails = () => {
               <p className="text-xs text-gray-500 mb-4">Key details at a glance</p>
 
               <InfoRow
-                icon={<span className="text-sm">₹</span>}
+                icon={AppIcons.Stipend}
                 label="Stipend"
                 value={post.stipend === 0 ? "Unpaid" : `₹${post.stipend} per month`}
               />
+              <InfoRow icon={AppIcons.Duration} label="Duration" value={post.duration} />
               <InfoRow
-                icon={<span className="text-sm">⏱</span>}
-                label="Duration"
-                value={post.duration}
-              />
-              <InfoRow
-                icon={<span className="text-sm">📅</span>}
+                icon={AppIcons.Calendar}
                 label="Start Date"
                 value={format(new Date(post.startDate), "MMMM d, yyyy")}
               />
-              <InfoRow
-                icon={<span className="text-sm">📍</span>}
-                label="Location"
-                value={post.location}
-              />
-              <InfoRow
-                icon={<span className="text-sm">💼</span>}
-                label="Work Mode"
-                value={workMode}
-              />
+              <InfoRow icon={AppIcons.Location} label="Location" value={post.location} />
+              <InfoRow icon={AppIcons.WorkMode} label="Work Mode" value={workMode} />
 
-              <button
-                type="button"
-                onClick={handleApplyClick}
-                disabled={applying}
-                className="w-full mt-5 py-3 bg-purple-600 text-white font-semibold rounded-lg hover:bg-purple-700 transition-colors disabled:opacity-60"
-              >
-                {applying ? "Applying..." : "Apply Now"}
-              </button>
+              {hasApplied ? (
+                <div className="w-full mt-5 py-3 bg-emerald-50 text-emerald-700 border border-emerald-200 font-semibold rounded-lg text-center text-sm">
+                  Already Applied
+                </div>
+              ) : (
+                <button
+                  type="button"
+                  onClick={handleApplyClick}
+                  disabled={applying}
+                  className="w-full mt-5 py-3 bg-purple-600 text-white font-semibold rounded-lg hover:bg-purple-700 transition-colors disabled:opacity-60"
+                >
+                  {applying ? "Applying..." : "Apply Now"}
+                </button>
+              )}
 
               <p className="text-xs text-gray-400 text-center mt-3">
                 Make sure your resume is uploaded before applying
