@@ -3,8 +3,8 @@ import { PageContainer } from "./ContentShell";
 
 const FooterColumn = ({ title, links }) => (
   <div className="min-w-0">
-    <h3 className="text-sm font-semibold text-gray-900 mb-4">{title}</h3>
-    <ul className="space-y-2.5">
+    <h3 className="text-sm font-semibold text-gray-900 mb-3 sm:mb-4">{title}</h3>
+    <ul className="space-y-2 sm:space-y-2.5">
       {links.map(({ label, to, external }) => (
         <li key={label}>
           {external ? (
@@ -51,27 +51,30 @@ const Footer = () => {
 
   return (
     <footer className="relative z-20 mt-auto w-full bg-gradient-to-r from-[#c599e52d] via-[#ca84fc38] to-[#e2ccf23c] border-t border-purple-100">
-      <PageContainer className="py-10 sm:py-12">
-        {/* Same width grid as home: 20rem sidebar + main area split into 3 link columns */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-[20rem_minmax(0,1fr)_minmax(0,1fr)_minmax(0,1fr)] gap-6 lg:gap-8 w-full min-w-0">
-          <div className="min-w-0 sm:col-span-2 lg:col-span-1">
+      <PageContainer className="py-8 sm:py-10 lg:py-12">
+        <div className="grid grid-cols-1 gap-8 min-w-0 sm:grid-cols-2 lg:grid-cols-4 lg:gap-10">
+          {/* Brand */}
+          <div className="min-w-0 sm:col-span-2 lg:col-span-1 text-center sm:text-left">
             <Link
               to="/"
-              className="text-xl md:text-2xl font-semibold text-purple-600 hover:text-purple-700 transition-colors"
+              className="text-xl sm:text-2xl font-semibold text-purple-600 hover:text-purple-700 transition-colors"
             >
               InternshipYatra
             </Link>
-            <p className="text-sm text-[#303030] mt-4 leading-relaxed">
+            <p className="text-sm text-[#303030] mt-3 sm:mt-4 leading-relaxed max-w-md mx-auto sm:mx-0">
               Browse internships, apply in one click, and share your profile and resume with recruiters who post roles on InternshipYatra.
-            </p>
-            <p className="text-xs sm:text-sm text-gray-500 mt-6">
-              &copy; {year} InternshipYatra. All rights reserved.
             </p>
           </div>
 
           <FooterColumn title="For Students" links={studentLinks} />
           <FooterColumn title="For Recruiters" links={recruiterLinks} />
           <FooterColumn title="Company" links={companyLinks} />
+        </div>
+
+        <div className="mt-8 pt-6 border-t border-purple-100/80 text-center ">
+          <p className="text-xs sm:text-sm text-gray-500">
+            &copy; {year} InternshipYatra. All rights reserved.
+          </p>
         </div>
       </PageContainer>
     </footer>
