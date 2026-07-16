@@ -1,5 +1,6 @@
 const User = require('../Models/userModel');
 const JWT = require('jsonwebtoken');
+const { getJwtSecret } = require('../lib/env');
 
 const VerifyOTP = async (req, res) => {
     try {
@@ -35,7 +36,7 @@ const VerifyOTP = async (req, res) => {
 
         const resetToken = JWT.sign(
             { _id: user._id, purpose: 'password-reset' },
-            process.env.JWT_SECRATE,
+            getJwtSecret(),
             { expiresIn: '15m' }
         );
 

@@ -3,7 +3,8 @@ import { useAuth } from "../context/AuthContext";
 
 const ProtectedRoutes = () => {
   const { auth } = useAuth();
-  return auth.accessToken ? <Outlet /> : <Navigate to="/login" />;
+  const token = auth.accessToken || localStorage.getItem("accessToken");
+  return token ? <Outlet /> : <Navigate to="/login" replace />;
 };
 
 export default ProtectedRoutes;

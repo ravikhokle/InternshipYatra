@@ -1,8 +1,16 @@
 const JWT = require("jsonwebtoken");
 const User = require("../Models/userModel");
+const { getJwtSecret, getRefreshSecret } = require("../lib/env");
 
 const RefreshToken = async (req, res) => {
     try {
+        const jwtSecret = getJwtSecret();
+        const refreshSecret = getRefreshSecret();
+
+        if (!jwtSecret || !refreshSecret) {
+            return res.status(503).json({ message: "Server auth is not configured", success: false });
+        }
+
         const token = req.cookies?.refreshToken;
 
         if (!token) {
@@ -12,7 +20,7 @@ const RefreshToken = async (req, res) => {
         // Verify the refresh token signature
         let decoded;
         try {
-            decoded = JWT.verify(token, process.env.REFRESH_TOKEN_SECRET);
+            decoded = JWT.verify(token, refreshSecret);
         } catch (err) {
             return res.status(403).json({ message: "Invalid or expired refresh token", success: false });
         }
@@ -26,7 +34,7 @@ const RefreshToken = async (req, res) => {
         // Issue a new short-lived access token
         const accessToken = JWT.sign(
             { email: user.email, _id: user._id },
-            process.env.JWT_SECRATE,
+            jwtSecret,
             { expiresIn: '15m' }
         );
 

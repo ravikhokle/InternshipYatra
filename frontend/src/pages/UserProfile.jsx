@@ -3,11 +3,11 @@ import { handleError, handleSuccess } from "../Utils";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import axiosInstance from "../api/axiosInstance";
-import { format } from "date-fns";
 import { mergePrivacy, PRIVACY_FIELDS, DEFAULT_PRIVACY } from "../utils/privacy";
 import { MetaItem, ProfileIcons, SocialLink, LoadingSpinner } from "../components/AppIcons";
 import { getPublicProfileUrl } from "../utils/profileUsername";
 import { getInternshipUrl } from "../utils/internshipSlug";
+import { safeFormatDate } from "../utils/safeDate";
 
 const DEFAULT_AVATAR =
   "https://res.cloudinary.com/db1xxbbat/image/upload/v1736079370/frontend/umzlgcigwtajqrqhrtct.png";
@@ -88,6 +88,7 @@ const UserProfile = () => {
   const [applications, setApplications] = useState([]);
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState(null);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showPostsModal, setShowPostsModal] = useState(false);
   const [deleting, setDeleting] = useState(false);
@@ -98,22 +99,46 @@ const UserProfile = () => {
 
   useEffect(() => {
     const fetchAll = async () => {
-      try {
-        const [profileRes, appsRes, postsRes] = await Promise.all([
-          axiosInstance.get("/profile", { params: { _id: auth.userID } }),
-          axiosInstance.get("/profile/userApplications", { params: { _id: auth.userID } }),
-          axiosInstance.get("/profile/userPosts", { params: { _id: auth.userID } }),
-        ]);
-        setProfile(profileRes.data);
-        setApplications(appsRes.data);
-        setPosts(postsRes.data);
-      } catch (error) {
-        handleError(error.response?.data?.message || "Failed to load profile");
-      } finally {
+      if (!auth.userID) {
         setLoading(false);
+        setLoadError("Session expired. Please log in again.");
+        return;
       }
+
+      setLoading(true);
+      setLoadError(null);
+
+      const [profileRes, appsRes, postsRes] = await Promise.allSettled([
+        axiosInstance.get("/profile", { params: { _id: auth.userID } }),
+        axiosInstance.get("/profile/userApplications", { params: { _id: auth.userID } }),
+        axiosInstance.get("/profile/userPosts", { params: { _id: auth.userID } }),
+      ]);
+
+      if (profileRes.status === "fulfilled") {
+        setProfile(profileRes.value.data);
+      } else {
+        const message =
+          profileRes.reason?.response?.data?.message || "Failed to load profile";
+        setLoadError(message);
+        handleError(message);
+      }
+
+      if (appsRes.status === "fulfilled") {
+        setApplications(appsRes.value.data || []);
+      } else {
+        setApplications([]);
+      }
+
+      if (postsRes.status === "fulfilled") {
+        setPosts(postsRes.value.data || []);
+      } else {
+        setPosts([]);
+      }
+
+      setLoading(false);
     };
-    if (auth.userID) fetchAll();
+
+    fetchAll();
   }, [auth.userID]);
 
   const handleLogout = async () => {
@@ -175,7 +200,30 @@ const UserProfile = () => {
     );
   }
 
-  if (!profile) return null;
+  if (!profile) {
+    return (
+      <div className="min-h-screen bg-[#f3f2ef] flex flex-col items-center justify-center gap-4 px-4 text-center">
+        <p className="text-gray-600 text-sm max-w-md">
+          {loadError || "We couldn't load your profile right now."}
+        </p>
+        <div className="flex flex-wrap gap-3 justify-center">
+          <button
+            type="button"
+            onClick={() => window.location.reload()}
+            className="px-4 py-2 bg-purple-600 text-white text-sm font-medium rounded-lg hover:bg-purple-700"
+          >
+            Try again
+          </button>
+          <Link
+            to="/login"
+            className="px-4 py-2 border border-gray-300 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-50"
+          >
+            Log in again
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
   const { percent: strength, checks } = calcProfileStrength(profile);
   const privacy = mergePrivacy(profile.privacySettings);
@@ -471,7 +519,9 @@ const UserProfile = () => {
                       <div className="min-w-0">
                         <p className="font-medium text-gray-900 text-sm sm:text-base truncate">{app.title}</p>
                         <p className="text-xs text-gray-500 mt-0.5">
-                          Applied {format(new Date(app.createdAt), "dd MMM yyyy")}
+                          {safeFormatDate(app.createdAt)
+                            ? `Applied ${safeFormatDate(app.createdAt)}`
+                            : "Applied"}
                         </p>
                       </div>
                       <span className={`self-start sm:self-center px-3 py-1 rounded-full text-xs font-semibold border ${STATUS_STYLES[app.status] || STATUS_STYLES.Applied}`}>
@@ -600,8 +650,8 @@ const UserProfile = () => {
                       <p className="text-xs text-gray-400 mt-1 inline-flex flex-wrap items-center gap-x-3 gap-y-1">
                         <span>{post.location}</span>
                         <span>{post.stipend === 0 ? "Unpaid" : `₹${post.stipend}/mo`}</span>
-                        {post.createdAt && (
-                          <span>{format(new Date(post.createdAt), "dd MMM yyyy")}</span>
+                        {safeFormatDate(post.createdAt) && (
+                          <span>{safeFormatDate(post.createdAt)}</span>
                         )}
                       </p>
                     </div>

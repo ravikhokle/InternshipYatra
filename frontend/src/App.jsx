@@ -25,12 +25,14 @@ import ViewDetails from './pages/ViewDetails';
 import AppliedUsers from './pages/AppliedUsers';
 import UpdatePost from './pages/UpdatePost';
 import UpdateUserProfile from './pages/UpdateUserProfile';
+import ErrorBoundary from './components/ErrorBoundary';
 
 function App() {
   return (
     <div className="flex flex-col min-h-screen">
       <Header />
       <main className="flex-1">
+      <ErrorBoundary>
       <Routes>
         <Route path='/login' element={<Login />} />
         <Route path='/forgot-password' element={<ForgotPassword />} />
@@ -60,6 +62,7 @@ function App() {
         <Route path='/:slug' element={<ViewDetails />} />
         <Route path='*' element={<NotFound />} />
       </Routes>
+      </ErrorBoundary>
       </main>
       <Footer />
       {/* Single global ToastContainer — eliminates duplicate toasts across pages */}

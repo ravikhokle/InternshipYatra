@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
-import { format } from "date-fns";
 import { getWorkMode, parseSkills } from "../utils/internshipFilters";
 import { getInternshipUrl } from "../utils/internshipSlug";
+import { safeFormatDate } from "../utils/safeDate";
 import { AppIcons, MetaTag } from "../components/AppIcons";
 
 const DEFAULT_LOGO =
@@ -59,7 +59,7 @@ const InternshipCard = ({ post, onApply, hasApplied = false }) => {
 
           <p className="inline-flex items-center gap-1 text-xs text-gray-400 mt-3">
             <AppIcons.Calendar className="w-3.5 h-3.5" />
-            Starts {format(new Date(post.startDate), "MMM d, yyyy")}
+            Starts {safeFormatDate(post.startDate, "MMM d, yyyy") || "TBD"}
           </p>
         </div>
       </div>

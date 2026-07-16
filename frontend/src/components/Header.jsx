@@ -1,7 +1,9 @@
 import { Link, useNavigate } from "react-router-dom";
-import { ToastContainer } from "react-toastify";
 import { handleSuccess } from "../Utils";
 import { useAuth } from "../context/AuthContext";
+
+const DEFAULT_AVATAR =
+  "https://res.cloudinary.com/db1xxbbat/image/upload/v1736079370/frontend/umzlgcigwtajqrqhrtct.png";
 
 const Header = () => {
   const { auth, logout } = useAuth();
@@ -73,7 +75,7 @@ const Header = () => {
             <Link to="/profile" className="sm:mr-3 md:mr-5 flex items-center">
               <img
                 className="rounded-full w-[40px] h-[40px] md:w-[45px] md:h-[45px] drop-shadow-lg object-cover"
-                src={userProfile}
+                src={userProfile || DEFAULT_AVATAR}
                 alt="Profile"
               />
             </Link>
@@ -112,7 +114,6 @@ const Header = () => {
             </Link>
           </div>
         )}
-        <ToastContainer />
       </div>
     </header>
   );

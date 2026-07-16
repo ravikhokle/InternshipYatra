@@ -1,10 +1,11 @@
 import { useState, useEffect } from "react";
-import { Link, useParams, useNavigate } from "react-router-dom";
-import { format } from "date-fns";
+import { Link, useParams, useNavigate, Navigate } from "react-router-dom";
 import { handleError, handleSuccess } from "../Utils";
 import axiosInstance from "../api/axiosInstance";
 import { getWorkMode, parseSkills } from "../utils/internshipFilters";
 import { getInternshipUrl } from "../utils/internshipSlug";
+import { isReservedSlug } from "../utils/reservedRoutes";
+import { safeFormatDate } from "../utils/safeDate";
 import { AppIcons, BackLink, IconBadge, LoadingSpinner, MetaTag, SectionTitle } from "../components/AppIcons";
 
 const DEFAULT_LOGO =
@@ -108,6 +109,10 @@ const ViewDetails = () => {
     }
   };
 
+  if (slug && isReservedSlug(slug)) {
+    return <Navigate to="/" replace />;
+  }
+
   if (loading) {
     return (
       <div className="min-h-[calc(100vh-80px)] bg-[#f3f2ef] flex items-center justify-center">
@@ -205,7 +210,7 @@ const ViewDetails = () => {
               <InfoRow
                 icon={AppIcons.Calendar}
                 label="Start Date"
-                value={format(new Date(post.startDate), "MMMM d, yyyy")}
+                value={safeFormatDate(post.startDate, "MMMM d, yyyy") || "Not specified"}
               />
               <InfoRow icon={AppIcons.Location} label="Location" value={post.location} />
               <InfoRow icon={AppIcons.WorkMode} label="Work Mode" value={workMode} />

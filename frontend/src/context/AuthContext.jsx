@@ -1,7 +1,14 @@
-import { createContext, useContext, useState, useCallback } from 'react';
+import { createContext, useContext, useState, useCallback, useEffect } from 'react';
 import axiosInstance from '../api/axiosInstance';
 
 const AuthContext = createContext(null);
+
+const emptyAuth = {
+  accessToken: null,
+  userName: null,
+  userID: null,
+  userProfile: null,
+};
 
 export const AuthProvider = ({ children }) => {
   const [auth, setAuth] = useState({
@@ -10,6 +17,17 @@ export const AuthProvider = ({ children }) => {
     userID: localStorage.getItem('userID') || null,
     userProfile: localStorage.getItem('userProfile') || null,
   });
+
+  useEffect(() => {
+    const syncAuth = () => {
+      const token = localStorage.getItem('accessToken');
+      if (!token) {
+        setAuth(emptyAuth);
+      }
+    };
+    window.addEventListener('auth:logout', syncAuth);
+    return () => window.removeEventListener('auth:logout', syncAuth);
+  }, []);
 
   // Called after successful login — stores tokens & user info
   const login = useCallback((data) => {
@@ -36,7 +54,7 @@ export const AuthProvider = ({ children }) => {
     localStorage.removeItem('userID');
     localStorage.removeItem('userProfile');
 
-    setAuth({ accessToken: null, userName: null, userID: null, userProfile: null });
+    setAuth(emptyAuth);
   }, []);
 
   // Called from UpdateProfileImg after a successful upload

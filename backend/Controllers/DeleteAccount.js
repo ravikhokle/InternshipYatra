@@ -2,6 +2,7 @@ const User = require('../Models/userModel');
 const Post = require('../Models/PostModel');
 const Apply = require('../Models/applyModel');
 const PendingSignup = require('../Models/PendingSignupModel');
+const { clearCookieOptions } = require('../lib/env');
 
 const DeleteAccount = async (req, res) => {
     try {
@@ -27,11 +28,7 @@ const DeleteAccount = async (req, res) => {
 
         await User.findByIdAndDelete(userId);
 
-        res.clearCookie('refreshToken', {
-            httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
-            sameSite: 'strict',
-        });
+        res.clearCookie('refreshToken', clearCookieOptions());
 
         res.status(200).json({
             message: 'Account deleted successfully',

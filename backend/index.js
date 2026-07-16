@@ -10,18 +10,17 @@ const AuthRouter = require('./Routes/AuthRouter');
 const PostRouter = require('./Routes/PostRouter');
 const ProfileRouter = require('./Routes/ProfileRouter');
 const ContactRouter = require('./Routes/ContactRouter');
+const { assertProductionEnv } = require('./lib/env');
 
 const PORT = process.env.PORT || 8000;
 
+assertProductionEnv();
 DBConnect();
 
 const allowedOrigins = [
     'http://localhost:5173',
-    process.env.CLIENT_URL,
     process.env.FRONTEND_URL,
-    process.env.RENDER_EXTERNAL_URL,
     'https://internshipyatra.vercel.app',
-    'https://internshipyatra.ravikhokle.site',
 ].filter(Boolean);
 
 app.use(cors({

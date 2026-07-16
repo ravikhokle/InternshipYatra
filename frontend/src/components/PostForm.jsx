@@ -1,9 +1,9 @@
 import { useEffect, useRef, useState, useMemo, useCallback } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import JoditEditor from "jodit-react";
-import { format } from "date-fns";
 import { handleError, handleSuccess } from "../Utils";
 import axiosInstance from "../api/axiosInstance";
+import { safeFormatDate } from "../utils/safeDate";
 import { authInputClass, authButtonClass } from "./AuthLayout";
 
 const DEFAULT_LOGO =
@@ -149,7 +149,7 @@ const PostPreview = ({ form, content, workMode, companyLogo, isUnpaid }) => (
         {form.startDate && (
           <p>
             <span className="font-medium text-gray-800">Starts:</span>{" "}
-            {format(new Date(form.startDate), "MMM d, yyyy")}
+            {safeFormatDate(form.startDate, "MMM d, yyyy")}
           </p>
         )}
       </div>

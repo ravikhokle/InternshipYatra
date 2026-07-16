@@ -3,32 +3,38 @@ const bcrypt = require('bcrypt');
 const JWT = require('jsonwebtoken');
 const { OAuth2Client } = require('google-auth-library');
 const User = require('../Models/userModel');
+const { getJwtSecret, getRefreshSecret, getMissingAuthEnv, cookieOptions } = require('../lib/env');
 
 const DEFAULT_PROFILE =
     'https://res.cloudinary.com/db1xxbbat/image/upload/v1736079370/frontend/umzlgcigwtajqrqhrtct.png';
 
 const issueAuthResponse = async (user, res, message) => {
+    const jwtSecret = getJwtSecret();
+    const refreshSecret = getRefreshSecret();
+
+    if (!jwtSecret || !refreshSecret) {
+        return res.status(503).json({
+            message: 'Server auth is not configured. Missing JWT secrets on the server.',
+            success: false,
+        });
+    }
+
     const accessToken = JWT.sign(
         { email: user.email, _id: user._id },
-        process.env.JWT_SECRATE,
+        jwtSecret,
         { expiresIn: '15m' }
     );
 
     const refreshToken = JWT.sign(
         { _id: user._id },
-        process.env.REFRESH_TOKEN_SECRET,
+        refreshSecret,
         { expiresIn: '7d' }
     );
 
     user.refreshToken = refreshToken;
     await user.save();
 
-    res.cookie('refreshToken', refreshToken, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'strict',
-        maxAge: 7 * 24 * 60 * 60 * 1000,
-    });
+    res.cookie('refreshToken', refreshToken, cookieOptions());
 
     res.status(200).json({
         message,
@@ -48,6 +54,14 @@ const GoogleAuth = async (req, res) => {
 
         if (!credential) {
             return res.status(400).json({ message: 'Google credential is required', success: false });
+        }
+
+        const missing = getMissingAuthEnv();
+        if (missing.length > 0) {
+            return res.status(503).json({
+                message: `Server is missing configuration: ${missing.join(', ')}`,
+                success: false,
+            });
         }
 
         if (!process.env.GOOGLE_CLIENT_ID) {

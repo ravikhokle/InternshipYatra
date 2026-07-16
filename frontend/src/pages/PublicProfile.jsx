@@ -60,7 +60,14 @@ const PublicProfile = () => {
     );
   }
 
-  if (!userData) return null;
+  if (!userData) {
+    return (
+      <div className="min-h-screen bg-[#f3f2ef] flex flex-col items-center justify-center gap-4 px-4 text-center">
+        <p className="text-gray-600 text-sm">This profile could not be found or is unavailable.</p>
+        <BackLink to="/">Back to internships</BackLink>
+      </div>
+    );
+  }
 
   const hasAbout = userData.bio || userData.headline;
   const hasBackground = userData.skills?.length || userData.education || userData.experience;

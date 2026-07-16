@@ -1,6 +1,7 @@
 const User = require('../Models/userModel');
 const JWT = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
+const { getJwtSecret } = require('../lib/env');
 
 const ResetPassword = async (req, res) => {
     try {
@@ -17,7 +18,7 @@ const ResetPassword = async (req, res) => {
         // Verify the reset token
         let decoded;
         try {
-            decoded = JWT.verify(resetToken, process.env.JWT_SECRATE);
+            decoded = JWT.verify(resetToken, getJwtSecret());
         } catch (err) {
             return res.status(403).json({ message: 'Reset link has expired. Please start over.', success: false });
         }
