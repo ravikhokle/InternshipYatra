@@ -1,0 +1,16 @@
+{
+  "name": "internshipyatra",
+  "version": "1.0.0",
+  "private": true,
+  "description": "InternshipYatra monorepo root for Render deployment",
+  "workspaces": [
+    "backend"
+  ],
+  "scripts": {
+    "start": "npm start --workspace=backend",
+    "build": "npm install --workspace=backend"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

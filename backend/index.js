@@ -19,7 +19,9 @@ const allowedOrigins = [
     'http://localhost:5173',
     process.env.CLIENT_URL,
     process.env.FRONTEND_URL,
+    process.env.RENDER_EXTERNAL_URL,
     'https://internshipyatra.vercel.app',
+    'https://internshipyatra.ravikhokle.site',
 ].filter(Boolean);
 
 app.use(cors({
