@@ -2,9 +2,23 @@ const mongoose = require("mongoose");
 const Post = require("../Models/PostModel");
 const { ensureUniqueSlug } = require("../lib/slug");
 
+const normalizeApplyLink = (value) => {
+  if (value == null) return "";
+  const trimmed = String(value).trim();
+  if (!trimmed) return "";
+  try {
+    const url = /^https?:\/\//i.test(trimmed) ? trimmed : `https://${trimmed}`;
+    const parsed = new URL(url);
+    if (!["http:", "https:"].includes(parsed.protocol)) return "";
+    return parsed.toString();
+  } catch {
+    return "";
+  }
+};
+
 const updatePost = async (req, res) => {
   try {
-    const { postId, title, companyName, skills, stipend, location, duration, startDate, postDetails } = req.body;
+    const { postId, title, companyName, skills, stipend, location, duration, startDate, postDetails, applyLink } = req.body;
 
     if (!postId || !mongoose.isValidObjectId(postId)) {
       return res.status(400).json({
@@ -30,6 +44,7 @@ const updatePost = async (req, res) => {
     if (duration) updateFields.duration = duration;
     if (startDate) updateFields.startDate = startDate;
     if (postDetails) updateFields.postDetails = postDetails;
+    if (applyLink !== undefined) updateFields.applyLink = normalizeApplyLink(applyLink);
 
     if (title && title !== existingPost.title) {
       updateFields.slug = await ensureUniqueSlug(title, postId);

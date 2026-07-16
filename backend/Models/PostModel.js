@@ -46,6 +46,11 @@ const PostSchema = new mongoose.Schema({
     companyLogoURL:{
         type:String,
     },
+    applyLink: {
+        type: String,
+        trim: true,
+        default: "",
+    },
 },{ timestamps: true });
 
 const Post = mongoose.model('Post', PostSchema);

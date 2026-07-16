@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { handleError, handleSuccess } from "../Utils";
 import axiosInstance from "../api/axiosInstance";
 import { authInputClass, authButtonClass } from "../components/AuthLayout";
@@ -35,7 +35,7 @@ const PrivacyToggle = ({ isPublic, onChange }) => (
 );
 
 const Field = ({ label, id, children, hint, privacyKey, isPublic, onTogglePrivacy }) => (
-  <div className="mb-4 sm:mb-5">
+  <div data-field={id} className="mb-4 sm:mb-5 scroll-mt-28 rounded-lg transition-shadow duration-300">
     <div className="flex items-center justify-between gap-2 mb-1">
       <label htmlFor={id} className="block text-sm font-medium text-gray-700">
         {label}
@@ -71,8 +71,10 @@ const UpdateUserProfile = () => {
   const [usernameStatus, setUsernameStatus] = useState({ checking: false, available: null, message: "" });
   const [privacy, setPrivacy] = useState({ ...DEFAULT_PRIVACY });
   const [loading, setLoading] = useState(false);
+  const [profileLoaded, setProfileLoaded] = useState(false);
 
   const navigate = useNavigate();
+  const location = useLocation();
   const userID = localStorage.getItem("userID");
 
   const usernameEditStatus = useMemo(
@@ -109,10 +111,44 @@ const UpdateUserProfile = () => {
         setPrivacy(mergePrivacy(data.privacySettings));
       } catch (error) {
         handleError(error.response?.data?.message || "Failed to load profile");
+      } finally {
+        setProfileLoaded(true);
       }
     };
     fetchProfileData();
   }, [userID]);
+
+  useEffect(() => {
+    if (!profileLoaded) return undefined;
+
+    const hash = location.hash.replace(/^#/, "");
+    if (!hash) return undefined;
+
+    const timer = window.setTimeout(() => {
+      const sectionEl = document.getElementById(hash);
+      const fieldEl = document.querySelector(`[data-field="${hash}"]`);
+      const inputEl = document.getElementById(hash);
+      const target = sectionEl || fieldEl || inputEl;
+      if (!target) return;
+
+      target.scrollIntoView({ behavior: "smooth", block: "center" });
+
+      const focusEl =
+        target.querySelector?.("input:not([disabled]), textarea:not([disabled]), select:not([disabled])") ||
+        (target.matches?.("input:not([disabled]), textarea:not([disabled])") ? target : null);
+
+      if (focusEl) {
+        window.setTimeout(() => focusEl.focus({ preventScroll: true }), 350);
+      }
+
+      target.classList.add("ring-2", "ring-purple-300", "ring-offset-2");
+      window.setTimeout(() => {
+        target.classList.remove("ring-2", "ring-purple-300", "ring-offset-2");
+      }, 2000);
+    }, 150);
+
+    return () => window.clearTimeout(timer);
+  }, [location.hash, profileLoaded]);
 
   useEffect(() => {
     if (!usernameEditStatus.canChange || !usernameChanged || normalizedUsername.length < 3) {
@@ -323,7 +359,7 @@ const UpdateUserProfile = () => {
             </div>
           </div>
 
-          <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-5 sm:p-8">
+          <div id="company" className="bg-white rounded-xl border border-gray-200 shadow-sm p-5 sm:p-8 scroll-mt-28">
             <h2 className="text-base font-semibold text-gray-900 mb-1">Company / Recruiter</h2>
             <p className="text-xs text-gray-500 mb-4">Optional — for posting internships</p>
 
@@ -336,7 +372,7 @@ const UpdateUserProfile = () => {
             </Field>
           </div>
 
-          <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-5 sm:p-8">
+          <div id="privacy" className="bg-white rounded-xl border border-gray-200 shadow-sm p-5 sm:p-8 scroll-mt-28">
             <h2 className="text-base font-semibold text-gray-900 mb-1">Privacy Overview</h2>
             <p className="text-xs text-gray-500 mb-4">
               Toggle each field above, or review all settings here. Private fields are hidden on your public profile.

@@ -6,6 +6,7 @@ import { getWorkMode, parseSkills } from "../utils/internshipFilters";
 import { getInternshipUrl } from "../utils/internshipSlug";
 import { isReservedSlug } from "../utils/reservedRoutes";
 import { safeFormatDate } from "../utils/safeDate";
+import { hasExternalApplyLink, openExternalApplyLink } from "../utils/applyLink";
 import { AppIcons, BackLink, IconBadge, LoadingSpinner, MetaTag, SectionTitle } from "../components/AppIcons";
 
 const DEFAULT_LOGO =
@@ -86,6 +87,11 @@ const ViewDetails = () => {
   }, [post]);
 
   const handleApplyClick = async () => {
+    if (hasExternalApplyLink(post)) {
+      openExternalApplyLink(post.applyLink);
+      return;
+    }
+
     const _id = localStorage.getItem("userID");
     if (!_id) return handleError("Please login to apply for this internship");
 
@@ -133,6 +139,7 @@ const ViewDetails = () => {
 
   const skills = parseSkills(post.skills);
   const workMode = getWorkMode(post.location);
+  const isExternalApply = hasExternalApplyLink(post);
 
   return (
     <div className="min-h-screen bg-[#f3f2ef] py-6 sm:py-10 px-4 sm:px-6">
@@ -215,7 +222,16 @@ const ViewDetails = () => {
               <InfoRow icon={AppIcons.Location} label="Location" value={post.location} />
               <InfoRow icon={AppIcons.WorkMode} label="Work Mode" value={workMode} />
 
-              {hasApplied ? (
+              {isExternalApply ? (
+                <button
+                  type="button"
+                  onClick={handleApplyClick}
+                  className="w-full mt-5 py-3 bg-purple-600 text-white font-semibold rounded-lg hover:bg-purple-700 transition-colors inline-flex items-center justify-center gap-2"
+                >
+                  Apply Now
+                  <AppIcons.ExternalLink className="w-4 h-4" />
+                </button>
+              ) : hasApplied ? (
                 <div className="w-full mt-5 py-3 bg-emerald-50 text-emerald-700 border border-emerald-200 font-semibold rounded-lg text-center text-sm">
                   Already Applied
                 </div>
@@ -231,7 +247,9 @@ const ViewDetails = () => {
               )}
 
               <p className="text-xs text-gray-400 text-center mt-3">
-                Make sure your resume is uploaded before applying
+                {isExternalApply
+                  ? "You will be redirected to the external application page"
+                  : "Make sure your resume is uploaded before applying"}
               </p>
             </div>
           </div>

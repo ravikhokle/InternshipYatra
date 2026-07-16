@@ -3,7 +3,6 @@ import { handleError, handleSuccess } from "../Utils";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import axiosInstance from "../api/axiosInstance";
-import { mergePrivacy, PRIVACY_FIELDS, DEFAULT_PRIVACY } from "../utils/privacy";
 import { MetaItem, ProfileIcons, SocialLink, LoadingSpinner } from "../components/AppIcons";
 import { getPublicProfileUrl } from "../utils/profileUsername";
 import { getInternshipUrl } from "../utils/internshipSlug";
@@ -36,41 +35,21 @@ const calcProfileStrength = (p) => {
   return { percent: Math.round((done / checks.length) * 100), checks };
 };
 
-const PrivacyBadge = ({ isPublic }) => (
-  <span
-    className={`inline-flex items-center gap-1 text-[10px] sm:text-xs font-medium px-2 py-0.5 rounded-full ${
-      isPublic ? "bg-emerald-50 text-emerald-700" : "bg-gray-100 text-gray-500"
-    }`}
-  >
-    {isPublic ? (
-      <>
-        <ProfileIcons.Unlock className="w-3 h-3" />
-        Public
-      </>
-    ) : (
-      <>
-        <ProfileIcons.Lock className="w-3 h-3" />
-        Private
-      </>
-    )}
-  </span>
-);
-
-const SectionCard = ({ title, action, children, className = "", privacy }) => (
+const SectionCard = ({ title, action, children, className = "" }) => (
   <div className={`bg-white rounded-xl border border-gray-200 shadow-sm ${className}`}>
     <div className="flex items-center justify-between px-4 sm:px-6 py-4 border-b border-gray-100 gap-2">
-      <div className="flex items-center gap-2 min-w-0">
-        <h2 className="text-base sm:text-lg font-semibold text-gray-900 truncate">{title}</h2>
-        {privacy !== undefined && <PrivacyBadge isPublic={privacy} />}
-      </div>
+      <h2 className="text-base sm:text-lg font-semibold text-gray-900 truncate">{title}</h2>
       {action}
     </div>
     <div className="px-4 sm:px-6 py-4 sm:py-5">{children}</div>
   </div>
 );
 
-const EditLink = ({ to, label = "Edit" }) => (
-  <Link to={to} className="text-purple-600 text-sm font-medium hover:underline inline-flex items-center gap-1">
+const EditLink = ({ section, label = "Edit" }) => (
+  <Link
+    to={section ? `/updateuserprofile#${section}` : "/updateuserprofile"}
+    className="text-purple-600 text-sm font-medium hover:underline inline-flex items-center gap-1"
+  >
     <ProfileIcons.Edit className="w-4 h-4" />
     {label}
   </Link>
@@ -226,15 +205,14 @@ const UserProfile = () => {
   }
 
   const { percent: strength, checks } = calcProfileStrength(profile);
-  const privacy = mergePrivacy(profile.privacySettings);
 
   return (
-    <div className="min-h-screen bg-[#f3f2ef] pb-10">
+    <div className="min-h-screen bg-[#f3f2ef] pb-16 sm:pb-20">
       <div className="h-32 sm:h-44 md:h-52 bg-gradient-to-r from-[#c599e52d] via-[#ca84fc63] to-[#e2ccf23c] w-full" />
 
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 -mt-16 sm:-mt-20 md:-mt-[100px] relative z-10 overflow-visible">
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 -mt-16 sm:-mt-20 md:-mt-[100px] relative">
         {/* Profile header card */}
-        <div className="bg-white rounded-xl border border-gray-200 shadow-sm mb-4 overflow-visible">
+        <div className="relative z-10 bg-white rounded-xl border border-gray-200 shadow-sm mb-4 overflow-visible">
           <div className="flex flex-wrap items-center gap-x-4 gap-y-3 px-4 sm:px-8 py-5 sm:py-6">
             {/* Avatar — left of name, inside card */}
             <div className="relative shrink-0">
@@ -264,10 +242,7 @@ const UserProfile = () => {
               </p>
               <div className="flex flex-wrap items-center gap-x-4 gap-y-1 mt-2 text-xs sm:text-sm text-gray-500">
                 {profile.city && (
-                  <span className="flex items-center gap-1">
-                    <MetaItem icon={ProfileIcons.Location}>{profile.city}</MetaItem>
-                    {!privacy.city && <PrivacyBadge isPublic={false} />}
-                  </span>
+                  <MetaItem icon={ProfileIcons.Location}>{profile.city}</MetaItem>
                 )}
               </div>
             </div>
@@ -290,7 +265,7 @@ const UserProfile = () => {
           </div>
         </div>
 
-        <div className="grid lg:grid-cols-3 gap-4">
+        <div className="grid lg:grid-cols-3 gap-4 items-start">
           {/* Sidebar */}
           <div className="lg:col-span-1 space-y-4">
             {/* Profile strength */}
@@ -350,22 +325,16 @@ const UserProfile = () => {
             </SectionCard>
 
             {/* Contact */}
-            <SectionCard title="Contact Info">
+            <SectionCard title="Contact Info" action={<EditLink section="email" />}>
               <div className="space-y-3 text-sm">
-                <div className="flex items-start justify-between gap-2">
-                  <div className="flex items-start gap-3 min-w-0">
-                    <ProfileIcons.Email className="w-4 h-4 text-gray-400 mt-0.5 shrink-0" />
-                    <span className="text-gray-700 break-all">{profile.email}</span>
-                  </div>
-                  <PrivacyBadge isPublic={privacy.email} />
+                <div className="flex items-start gap-3 min-w-0">
+                  <ProfileIcons.Email className="w-4 h-4 text-gray-400 mt-0.5 shrink-0" />
+                  <span className="text-gray-700 break-all">{profile.email}</span>
                 </div>
                 {profile.number && (
-                  <div className="flex items-center justify-between gap-2">
-                    <div className="flex items-center gap-3">
-                      <ProfileIcons.Phone className="w-4 h-4 text-gray-400 shrink-0" />
-                      <span className="text-gray-700">{profile.number}</span>
-                    </div>
-                    <PrivacyBadge isPublic={privacy.number} />
+                  <div className="flex items-center gap-3">
+                    <ProfileIcons.Phone className="w-4 h-4 text-gray-400 shrink-0" />
+                    <span className="text-gray-700">{profile.number}</span>
                   </div>
                 )}
                 {(profile.linkedinURL || profile.githubURL) && (
@@ -388,7 +357,10 @@ const UserProfile = () => {
                     )}
                   </div>
                 )}
-                <Link to="/updateuserprofile" className="mt-3 block text-center text-xs text-purple-600 hover:underline">
+                <Link
+                  to="/updateuserprofile#privacy"
+                  className="mt-3 block text-center text-xs text-purple-600 hover:underline"
+                >
                   Manage privacy settings →
                 </Link>
               </div>
@@ -450,19 +422,19 @@ const UserProfile = () => {
           {/* Main content */}
           <div className="lg:col-span-2 space-y-4">
             {/* About */}
-            <SectionCard title="About" privacy={privacy.bio} action={<EditLink to="/updateuserprofile" />}>
+            <SectionCard title="About" action={<EditLink section="bio" />}>
               {profile.bio ? (
                 <p className="text-gray-700 text-sm sm:text-base leading-relaxed whitespace-pre-line">{profile.bio}</p>
               ) : (
                 <EmptyState
                   text="Tell recruiters about yourself — your goals, interests, and what you're looking for."
-                  action={<EditLink to="/updateuserprofile" label="Add about section" />}
+                  action={<EditLink section="bio" label="Add about section" />}
                 />
               )}
             </SectionCard>
 
             {/* Skills */}
-            <SectionCard title="Skills" privacy={privacy.skills} action={<EditLink to="/updateuserprofile" />}>
+            <SectionCard title="Skills" action={<EditLink section="skills" />}>
               {profile.skills?.length > 0 ? (
                 <div className="flex flex-wrap gap-2">
                   {profile.skills.map((skill) => (
@@ -477,21 +449,21 @@ const UserProfile = () => {
               ) : (
                 <EmptyState
                   text="Add skills like React, Python, UI/UX Design to stand out to recruiters."
-                  action={<EditLink to="/updateuserprofile" label="Add skills" />}
+                  action={<EditLink section="skills" label="Add skills" />}
                 />
               )}
             </SectionCard>
 
             {/* Education & Experience */}
             <div className="grid sm:grid-cols-2 gap-4">
-              <SectionCard title="Education" privacy={privacy.education} action={<EditLink to="/updateuserprofile" />}>
+              <SectionCard title="Education" action={<EditLink section="education" />}>
                 {profile.education ? (
                   <p className="text-gray-700 text-sm whitespace-pre-line">{profile.education}</p>
                 ) : (
                   <p className="text-gray-400 text-sm italic">Add your college, degree & year</p>
                 )}
               </SectionCard>
-              <SectionCard title="Experience" privacy={privacy.experience} action={<EditLink to="/updateuserprofile" />}>
+              <SectionCard title="Experience" action={<EditLink section="experience" />}>
                 {profile.experience ? (
                   <p className="text-gray-700 text-sm whitespace-pre-line">{profile.experience}</p>
                 ) : (
@@ -550,8 +522,7 @@ const UserProfile = () => {
             {/* Recruiter / Company hub */}
             <SectionCard
               title="Recruiter Hub"
-              privacy={privacy.companyName}
-              action={<EditLink to="/updateuserprofile" label="Edit company" />}
+              action={<EditLink section="company" label="Edit company" />}
             >
               <div className="flex flex-col sm:flex-row gap-4 sm:gap-6">
                 <div className="relative shrink-0 mx-auto sm:mx-0">

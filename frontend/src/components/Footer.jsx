@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { PageContainer, SidebarMainRow } from "./ContentShell";
+import { PageContainer } from "./ContentShell";
 
 const FooterColumn = ({ title, links }) => (
   <div className="min-w-0">
@@ -50,32 +50,29 @@ const Footer = () => {
   ];
 
   return (
-    <footer className="mt-auto w-full bg-gradient-to-r from-[#c599e52d] via-[#ca84fc38] to-[#e2ccf23c] border-t border-purple-100">
+    <footer className="relative z-20 mt-auto w-full bg-gradient-to-r from-[#c599e52d] via-[#ca84fc38] to-[#e2ccf23c] border-t border-purple-100">
       <PageContainer className="py-10 sm:py-12">
-        <SidebarMainRow
-          sidebar={
-            <>
-              <Link
-                to="/"
-                className="text-xl md:text-2xl font-semibold text-purple-600 hover:text-purple-700 transition-colors"
-              >
-                InternshipYatra
-              </Link>
-              <p className="text-sm text-[#303030] mt-4 leading-relaxed">
-                Browse internships, apply in one click, and share your profile and resume with recruiters who post roles on InternshipYatra.
-              </p>
-              <p className="text-xs sm:text-sm text-gray-500 mt-6">
-                &copy; {year} InternshipYatra. All rights reserved.
-              </p>
-            </>
-          }
-        >
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 lg:gap-8 w-full max-w-full">
-            <FooterColumn title="For Students" links={studentLinks} />
-            <FooterColumn title="For Recruiters" links={recruiterLinks} />
-            <FooterColumn title="Company" links={companyLinks} />
+        {/* Same width grid as home: 20rem sidebar + main area split into 3 link columns */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-[20rem_minmax(0,1fr)_minmax(0,1fr)_minmax(0,1fr)] gap-6 lg:gap-8 w-full min-w-0">
+          <div className="min-w-0 sm:col-span-2 lg:col-span-1">
+            <Link
+              to="/"
+              className="text-xl md:text-2xl font-semibold text-purple-600 hover:text-purple-700 transition-colors"
+            >
+              InternshipYatra
+            </Link>
+            <p className="text-sm text-[#303030] mt-4 leading-relaxed">
+              Browse internships, apply in one click, and share your profile and resume with recruiters who post roles on InternshipYatra.
+            </p>
+            <p className="text-xs sm:text-sm text-gray-500 mt-6">
+              &copy; {year} InternshipYatra. All rights reserved.
+            </p>
           </div>
-        </SidebarMainRow>
+
+          <FooterColumn title="For Students" links={studentLinks} />
+          <FooterColumn title="For Recruiters" links={recruiterLinks} />
+          <FooterColumn title="Company" links={companyLinks} />
+        </div>
       </PageContainer>
     </footer>
   );

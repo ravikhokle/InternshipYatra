@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { getWorkMode, parseSkills } from "../utils/internshipFilters";
 import { getInternshipUrl } from "../utils/internshipSlug";
 import { safeFormatDate } from "../utils/safeDate";
+import { hasExternalApplyLink, openExternalApplyLink } from "../utils/applyLink";
 import { AppIcons, MetaTag } from "../components/AppIcons";
 
 const DEFAULT_LOGO =
@@ -10,6 +11,15 @@ const DEFAULT_LOGO =
 const InternshipCard = ({ post, onApply, hasApplied = false }) => {
   const skills = parseSkills(post.skills);
   const workMode = getWorkMode(post.location);
+  const isExternalApply = hasExternalApplyLink(post);
+
+  const handleApply = () => {
+    if (isExternalApply) {
+      openExternalApplyLink(post.applyLink);
+      return;
+    }
+    onApply?.(post._id);
+  };
 
   return (
     <article className="bg-white rounded-xl border border-gray-200 shadow-sm hover:shadow-md hover:border-purple-200 transition-all p-5 sm:p-6">
@@ -71,14 +81,23 @@ const InternshipCard = ({ post, onApply, hasApplied = false }) => {
         >
           View Details
         </Link>
-        {hasApplied ? (
+        {isExternalApply ? (
+          <button
+            type="button"
+            onClick={handleApply}
+            className="flex-1 sm:flex-none px-4 py-2 text-sm bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors font-medium inline-flex items-center justify-center gap-1.5"
+          >
+            Apply Now
+            <AppIcons.ExternalLink className="w-3.5 h-3.5" />
+          </button>
+        ) : hasApplied ? (
           <span className="flex-1 sm:flex-none text-center px-4 py-2 text-sm bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-lg font-medium cursor-default">
             Already Applied
           </span>
         ) : (
           <button
             type="button"
-            onClick={() => onApply(post._id)}
+            onClick={handleApply}
             className="flex-1 sm:flex-none px-4 py-2 text-sm bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors font-medium"
           >
             Apply Now

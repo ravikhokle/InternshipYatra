@@ -5,16 +5,45 @@ import axiosInstance from "../api/axiosInstance";
 import { useAuth } from "../context/AuthContext";
 import { isMongoObjectId } from "../utils/profileUsername";
 import {
-  IconBadge,
   MetaItem,
   ProfileIcons,
-  SectionTitle,
   SocialLink,
   BackLink,
+  LoadingSpinner,
 } from "../components/AppIcons";
 
 const DEFAULT_AVATAR =
   "https://res.cloudinary.com/db1xxbbat/image/upload/v1736079370/frontend/umzlgcigwtajqrqhrtct.png";
+const DEFAULT_COMPANY_LOGO =
+  "https://res.cloudinary.com/db1xxbbat/image/upload/v1736079369/frontend/i0qh0dcvftwjvbdmw4ou.png";
+
+const SectionCard = ({ title, children, className = "" }) => (
+  <div className={`bg-white rounded-xl border border-gray-200 shadow-sm ${className}`}>
+    <div className="px-4 sm:px-6 py-4 border-b border-gray-100">
+      <h2 className="text-base sm:text-lg font-semibold text-gray-900">{title}</h2>
+    </div>
+    <div className="px-4 sm:px-6 py-4 sm:py-5">{children}</div>
+  </div>
+);
+
+const ContactRow = ({ icon: Icon, label, value, href }) => (
+  <div className="flex items-start gap-3 min-w-0">
+    <Icon className="w-4 h-4 text-gray-400 mt-0.5 shrink-0" />
+    <div className="min-w-0">
+      <p className="text-xs text-gray-500 mb-0.5">{label}</p>
+      {href ? (
+        <a
+          href={href}
+          className="text-sm font-medium text-gray-800 hover:text-purple-600 break-all transition-colors"
+        >
+          {value}
+        </a>
+      ) : (
+        <p className="text-sm font-medium text-gray-800 break-all">{value}</p>
+      )}
+    </div>
+  </div>
+);
 
 const PublicProfile = () => {
   const { username } = useParams();
@@ -55,7 +84,10 @@ const PublicProfile = () => {
   if (loading) {
     return (
       <div className="min-h-screen bg-[#f3f2ef] flex items-center justify-center">
-        <p className="text-gray-500 text-sm">Loading profile...</p>
+        <div className="flex flex-col items-center gap-3">
+          <LoadingSpinner className="w-8 h-8" />
+          <p className="text-gray-500 text-sm">Loading profile...</p>
+        </div>
       </div>
     );
   }
@@ -73,35 +105,24 @@ const PublicProfile = () => {
   const hasBackground = userData.skills?.length || userData.education || userData.experience;
   const hasCompany = userData.companyName || userData.companyBio;
   const hasContact = userData.email || userData.number;
-
-  const ContactItem = ({ icon: Icon, label, value, href }) => (
-    <div className="flex items-center gap-3 py-2">
-      <IconBadge icon={Icon} />
-      <div className="min-w-0">
-        <p className="text-xs text-gray-500">{label}</p>
-        {href ? (
-          <a href={href} className="text-sm font-medium text-purple-600 hover:underline break-all">
-            {value}
-          </a>
-        ) : (
-          <p className="text-sm font-medium text-gray-900 break-all">{value}</p>
-        )}
-      </div>
-    </div>
-  );
+  const hasSocial = userData.linkedinURL || userData.githubURL;
+  const showSidebar = hasContact || hasSocial;
+  const hasBothBackground =
+    Boolean(userData.education) && Boolean(userData.experience);
 
   return (
-    <div className="min-h-screen bg-[#f3f2ef] pb-10">
+    <div className="min-h-screen bg-[#f3f2ef] pb-16 sm:pb-20">
       <div className="h-32 sm:h-44 md:h-52 bg-gradient-to-r from-[#c599e52d] via-[#ca84fc63] to-[#e2ccf23c] w-full" />
 
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 -mt-16 sm:-mt-20 md:-mt-[100px] relative z-10 overflow-visible">
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 -mt-16 sm:-mt-20 md:-mt-[100px] relative">
         {accessToken && (
-          <div className="mb-4">
+          <div className="mb-4 relative z-10">
             <BackLink to="/profile">Back to Profile</BackLink>
           </div>
         )}
 
-        <div className="bg-white rounded-xl border border-gray-200 shadow-sm mb-4 overflow-visible">
+        {/* Header card — z-10 only here so it sits above the banner, not the footer */}
+        <div className="relative z-10 bg-white rounded-xl border border-gray-200 shadow-sm mb-4">
           <div className="flex flex-wrap items-center gap-x-4 gap-y-3 px-4 sm:px-8 py-5 sm:py-6">
             <div className="relative shrink-0">
               <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-full border-4 border-white shadow-xl overflow-hidden bg-gray-100 ring-2 ring-purple-100">
@@ -127,129 +148,137 @@ const PublicProfile = () => {
                   <MetaItem icon={ProfileIcons.Location}>{userData.city}</MetaItem>
                 </div>
               )}
-              {(userData.linkedinURL || userData.githubURL) && (
-                <div className="flex flex-wrap gap-2 mt-3">
-                  {userData.linkedinURL && (
-                    <SocialLink
-                      href={userData.linkedinURL}
-                      icon={ProfileIcons.LinkedIn}
-                      label="LinkedIn"
-                      className="text-blue-700 border-blue-100 hover:bg-blue-50"
-                    />
-                  )}
-                  {userData.githubURL && (
-                    <SocialLink
-                      href={userData.githubURL}
-                      icon={ProfileIcons.GitHub}
-                      label="GitHub"
-                      className="text-gray-800 hover:bg-gray-50"
-                    />
-                  )}
-                </div>
-              )}
             </div>
           </div>
         </div>
 
-        <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-visible px-4 sm:px-8 py-5 sm:py-8">
-          {hasContact && (
-            <div className="pb-6 border-b border-gray-100">
-              <h2 className="text-sm font-semibold text-gray-900 mb-3">Contact</h2>
-              <div className="space-y-1">
-                {userData.email && (
-                  <ContactItem
-                    icon={ProfileIcons.Email}
-                    label="Email"
-                    value={userData.email}
-                    href={`mailto:${userData.email}`}
-                  />
-                )}
-                {userData.number && (
-                  <ContactItem
-                    icon={ProfileIcons.Phone}
-                    label="Phone"
-                    value={userData.number}
-                    href={`tel:${userData.number.replace(/\s/g, "")}`}
-                  />
-                )}
-              </div>
-            </div>
-          )}
-
-          {userData.bio && (
-            <div className={`${hasContact ? "pt-6" : ""} pb-6 border-b border-gray-100`}>
-              <SectionTitle icon={ProfileIcons.About}>About</SectionTitle>
-              <p className="text-gray-700 text-sm leading-relaxed whitespace-pre-line mt-2">
-                {userData.bio}
-              </p>
-            </div>
-          )}
-
-          {userData.skills?.length > 0 && (
-            <div className="pt-6 pb-6 border-b border-gray-100">
-              <SectionTitle icon={ProfileIcons.Skills}>Skills</SectionTitle>
-              <div className="flex flex-wrap gap-2 mt-2">
-                {userData.skills.map((s) => (
-                  <span
-                    key={s}
-                    className="px-3 py-1 bg-purple-50 text-purple-700 rounded-full text-xs font-medium"
-                  >
-                    {s}
-                  </span>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {(userData.education || userData.experience) && (
-            <div className="grid sm:grid-cols-2 gap-4 pt-6 pb-6 border-b border-gray-100">
-              {userData.education && (
-                <div>
-                  <SectionTitle icon={ProfileIcons.Education}>Education</SectionTitle>
-                  <p className="text-gray-600 text-sm whitespace-pre-line mt-2">
-                    {userData.education}
-                  </p>
-                </div>
-              )}
-              {userData.experience && (
-                <div>
-                  <SectionTitle icon={ProfileIcons.Experience}>Experience</SectionTitle>
-                  <p className="text-gray-600 text-sm whitespace-pre-line mt-2">
-                    {userData.experience}
-                  </p>
-                </div>
-              )}
-            </div>
-          )}
-
-          {hasCompany && (
-            <div className="pt-6">
-              <div className="p-4 bg-gray-50 rounded-lg">
-                <div className="flex items-center gap-3">
-                  {userData.companyLogoURL && (
-                    <img
-                      src={userData.companyLogoURL}
-                      alt={userData.companyName || "Company"}
-                      className="w-12 h-12 rounded-lg object-cover border border-gray-200"
+        {/* Body — sidebar + main, aligned like UserProfile */}
+        <div className={`grid gap-4 items-start ${showSidebar ? "lg:grid-cols-3" : ""}`}>
+          {showSidebar && (
+            <div className="lg:col-span-1 space-y-4">
+              <SectionCard title="Contact">
+                <div className="space-y-4">
+                  {userData.email && (
+                    <ContactRow
+                      icon={ProfileIcons.Email}
+                      label="Email"
+                      value={userData.email}
+                      href={`mailto:${userData.email}`}
                     />
                   )}
-                  <h2 className="text-sm font-semibold text-gray-900 flex items-center gap-2">
-                    <ProfileIcons.Company className="w-4 h-4 text-purple-600 shrink-0" />
-                    {userData.companyName || "Company"}
-                  </h2>
+                  {userData.number && (
+                    <ContactRow
+                      icon={ProfileIcons.Phone}
+                      label="Phone"
+                      value={userData.number}
+                      href={`tel:${userData.number.replace(/\s/g, "")}`}
+                    />
+                  )}
+                  {hasSocial && (
+                    <div className="pt-1 border-t border-gray-100">
+                      <p className="text-xs text-gray-500 mb-2">Social profiles</p>
+                      <div className="flex flex-wrap gap-2">
+                        {userData.linkedinURL && (
+                          <SocialLink
+                            href={userData.linkedinURL}
+                            icon={ProfileIcons.LinkedIn}
+                            label="LinkedIn"
+                            className="text-blue-700 border-blue-100 hover:bg-blue-50 text-xs"
+                          />
+                        )}
+                        {userData.githubURL && (
+                          <SocialLink
+                            href={userData.githubURL}
+                            icon={ProfileIcons.GitHub}
+                            label="GitHub"
+                            className="text-gray-800 hover:bg-gray-50 text-xs"
+                          />
+                        )}
+                      </div>
+                    </div>
+                  )}
                 </div>
-                {userData.companyBio && (
-                  <p className="text-gray-600 text-sm mt-2">{userData.companyBio}</p>
-                )}
-              </div>
+              </SectionCard>
             </div>
           )}
 
-          {!hasAbout && !hasBackground && !hasCompany && !hasContact && (
-            <div className="text-center py-6">
-              <p className="text-gray-400 text-sm">This user has limited public profile information.</p>
-            </div>
-          )}
+          <div className={`space-y-4 ${showSidebar ? "lg:col-span-2" : ""}`}>
+            {userData.bio && (
+              <SectionCard title="About">
+                <p className="text-gray-700 text-sm sm:text-base leading-relaxed whitespace-pre-line">
+                  {userData.bio}
+                </p>
+              </SectionCard>
+            )}
+
+            {userData.skills?.length > 0 && (
+              <SectionCard title="Skills">
+                <div className="flex flex-wrap gap-2">
+                  {userData.skills.map((skill) => (
+                    <span
+                      key={skill}
+                      className="px-3 py-1.5 bg-purple-50 text-purple-700 border border-purple-100 rounded-full text-xs sm:text-sm font-medium"
+                    >
+                      {skill}
+                    </span>
+                  ))}
+                </div>
+              </SectionCard>
+            )}
+
+            {(userData.education || userData.experience) && (
+              <div
+                className={`grid gap-4 items-start ${
+                  hasBothBackground ? "sm:grid-cols-2" : "grid-cols-1"
+                }`}
+              >
+                {userData.education && (
+                  <SectionCard title="Education" className="h-full">
+                    <p className="text-gray-700 text-sm whitespace-pre-line leading-relaxed">
+                      {userData.education}
+                    </p>
+                  </SectionCard>
+                )}
+                {userData.experience && (
+                  <SectionCard title="Experience" className="h-full">
+                    <p className="text-gray-700 text-sm whitespace-pre-line leading-relaxed">
+                      {userData.experience}
+                    </p>
+                  </SectionCard>
+                )}
+              </div>
+            )}
+
+            {hasCompany && (
+              <SectionCard title="Company">
+                <div className="flex flex-col sm:flex-row gap-4 sm:gap-6">
+                  <img
+                    src={userData.companyLogoURL || DEFAULT_COMPANY_LOGO}
+                    alt={userData.companyName || "Company"}
+                    className="w-16 h-16 sm:w-20 sm:h-20 rounded-xl border border-gray-200 object-cover shadow-sm shrink-0 mx-auto sm:mx-0"
+                  />
+                  <div className="flex-1 text-center sm:text-left min-w-0">
+                    <h3 className="font-semibold text-gray-900 text-base sm:text-lg">
+                      {userData.companyName || "Company"}
+                    </h3>
+                    {userData.companyBio && (
+                      <p className="text-gray-600 text-sm mt-2 leading-relaxed whitespace-pre-line">
+                        {userData.companyBio}
+                      </p>
+                    )}
+                  </div>
+                </div>
+              </SectionCard>
+            )}
+
+            {!hasAbout && !hasBackground && !hasCompany && !hasContact && (
+              <SectionCard title="Profile">
+                <p className="text-gray-400 text-sm text-center py-4">
+                  This user has limited public profile information.
+                </p>
+              </SectionCard>
+            )}
+          </div>
         </div>
       </div>
     </div>

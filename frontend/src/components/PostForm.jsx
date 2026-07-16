@@ -4,6 +4,7 @@ import JoditEditor from "jodit-react";
 import { handleError, handleSuccess } from "../Utils";
 import axiosInstance from "../api/axiosInstance";
 import { safeFormatDate } from "../utils/safeDate";
+import { normalizeApplyLink } from "../utils/applyLink";
 import { authInputClass, authButtonClass } from "./AuthLayout";
 
 const DEFAULT_LOGO =
@@ -187,6 +188,8 @@ const PostForm = ({ mode = "create", postId, backTo = "/profile" }) => {
   const [durationPreset, setDurationPreset] = useState("");
   const [customDuration, setCustomDuration] = useState("");
   const [isUnpaid, setIsUnpaid] = useState(false);
+  const [useExternalApply, setUseExternalApply] = useState(false);
+  const [applyLink, setApplyLink] = useState("");
   const [companyLogo, setCompanyLogo] = useState(null);
   const [loading, setLoading] = useState(mode === "edit");
   const [submitting, setSubmitting] = useState(false);
@@ -255,6 +258,8 @@ const PostForm = ({ mode = "create", postId, backTo = "/profile" }) => {
         });
         setContent(data.postDetails || "");
         setIsUnpaid(data.stipend === 0);
+        setApplyLink(data.applyLink || "");
+        setUseExternalApply(Boolean(data.applyLink?.trim()));
         setDurationPreset(isPreset ? data.duration : data.duration ? "Custom" : "");
         setCustomDuration(isPreset ? "" : data.duration || "");
       } catch {
@@ -307,6 +312,10 @@ const PostForm = ({ mode = "create", postId, backTo = "/profile" }) => {
     if (!content.replace(/<[^>]*>/g, "").trim()) {
       next.postDetails = "Internship description is required";
     }
+    if (useExternalApply) {
+      const normalized = normalizeApplyLink(applyLink);
+      if (!normalized) next.applyLink = "Enter a valid apply URL (LinkedIn, Naukri, company site, etc.)";
+    }
     setErrors(next);
     return Object.keys(next).length === 0;
   };
@@ -327,6 +336,7 @@ const PostForm = ({ mode = "create", postId, backTo = "/profile" }) => {
       startDate: form.startDate,
       postDetails: content,
       userId,
+      applyLink: useExternalApply ? normalizeApplyLink(applyLink) : "",
     };
 
     try {
@@ -562,6 +572,57 @@ const PostForm = ({ mode = "create", postId, backTo = "/profile" }) => {
               </SectionCard>
 
               <SectionCard
+                title="Application Method"
+                subtitle="Use an external link if this internship is listed on LinkedIn, Naukri, or another platform"
+              >
+                <label className="flex items-start gap-3 cursor-pointer mb-4">
+                  <input
+                    type="checkbox"
+                    checked={useExternalApply}
+                    onChange={(e) => {
+                      setUseExternalApply(e.target.checked);
+                      if (!e.target.checked) {
+                        setApplyLink("");
+                        setErrors((prev) => ({ ...prev, applyLink: "" }));
+                      }
+                    }}
+                    className="mt-1 rounded border-gray-300 text-purple-600 focus:ring-purple-500"
+                  />
+                  <span>
+                    <span className="block text-sm font-medium text-gray-800">
+                      Apply via external link
+                    </span>
+                    <span className="block text-xs text-gray-500 mt-0.5">
+                      Candidates will be sent to your link instead of applying on InternshipYatra
+                    </span>
+                  </span>
+                </label>
+
+                {useExternalApply && (
+                  <FormField
+                    label="Apply Link"
+                    id="applyLink"
+                    required
+                    hint="e.g. https://linkedin.com/jobs/view/... or your company careers page"
+                    error={errors.applyLink}
+                  >
+                    <input
+                      id="applyLink"
+                      name="applyLink"
+                      type="url"
+                      value={applyLink}
+                      onChange={(e) => {
+                        setApplyLink(e.target.value);
+                        setErrors((prev) => ({ ...prev, applyLink: "" }));
+                      }}
+                      placeholder="https://..."
+                      className={authInputClass}
+                    />
+                  </FormField>
+                )}
+              </SectionCard>
+
+              <SectionCard
                 title="Internship Description"
                 subtitle="Use headings, bullet points, and links for a professional listing"
               >
@@ -610,6 +671,7 @@ const PostForm = ({ mode = "create", postId, backTo = "/profile" }) => {
                 <p>• List must-have skills separately in the skills field</p>
                 <p>• Mention perks, mentorship, and certificate in the description</p>
                 <p>• Keep start date realistic to get more applications</p>
+                <p>• For internships on LinkedIn/Naukri, enable external apply link</p>
               </div>
             </div>
           </div>
