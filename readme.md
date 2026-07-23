@@ -1,6 +1,6 @@
 # InternshipYatra
 
-🔗 Live — https://internshipyatra.ravikhokle.site
+🔗 Live — https://internshipyatra.vercel.app
 
 InternshipYatra is a full-stack web platform that connects students with internship opportunities. Interns can discover and apply for listings, while HR / companies can manage postings and review applicants.
 
